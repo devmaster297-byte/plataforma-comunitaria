@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSupabaseClient } from '@/lib/supabase'
-import { User, Mail, Phone, Camera, Save, AlertCircle, CheckCircle } from 'lucide-react'
+import { User, Mail, Phone, MapPin, Save, AlertCircle, CheckCircle } from 'lucide-react'
 
 export default function PerfilPage() {
   const [profile, setProfile] = useState<any>(null)
   const [name, setName] = useState('')
+  const [bairro, setBairro] = useState('')
   const [phone, setPhone] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -39,6 +40,7 @@ export default function PerfilPage() {
 
       setProfile(data)
       setName(data.name || '')
+      setBairro(data.bairro || '')
       setPhone(data.phone || '')
     } catch (error) {
       console.error('Erro ao carregar perfil:', error)
@@ -65,6 +67,7 @@ export default function PerfilPage() {
         .from('profiles')
         .update({
           name,
+          bairro,
           phone
         })
         .eq('id', session.user.id)
@@ -92,16 +95,11 @@ export default function PerfilPage() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          {/* Header com avatar */}
           <div className="bg-gradient-to-r from-primary-600 to-primary-800 px-6 py-8">
             <div className="flex items-center space-x-4">
               <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
                 {profile?.avatar_url ? (
-                  <img
-                    src={profile.avatar_url}
-                    alt="Avatar"
-                    className="w-20 h-20 rounded-full object-cover"
-                  />
+                  <img src={profile.avatar_url} alt="Avatar" className="w-20 h-20 rounded-full object-cover" />
                 ) : (
                   <User className="text-primary-600" size={40} />
                 )}
@@ -109,6 +107,12 @@ export default function PerfilPage() {
               <div className="flex-1">
                 <h1 className="text-2xl font-bold text-white">{profile?.name || 'Sem nome'}</h1>
                 <p className="text-primary-100">{profile?.email}</p>
+                {profile?.bairro && (
+                  <p className="text-primary-200 text-sm flex items-center gap-1 mt-1">
+                    <MapPin size={14} />
+                    {profile.bairro}
+                  </p>
+                )}
                 {profile?.role === 'admin' && (
                   <span className="inline-block mt-2 px-3 py-1 bg-purple-500 text-white text-xs font-semibold rounded-full">
                     Administrador
@@ -118,7 +122,6 @@ export default function PerfilPage() {
             </div>
           </div>
 
-          {/* Formulário */}
           <div className="p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6">Informações do Perfil</h2>
 
@@ -138,9 +141,7 @@ export default function PerfilPage() {
 
             <form onSubmit={handleSave} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                   <input
@@ -154,9 +155,7 @@ export default function PerfilPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nome Completo
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                   <input
@@ -170,57 +169,65 @@ export default function PerfilPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Telefone
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="(00) 00000-0000"
-                  />
-                </div>
-              </div>
-
-              <div className="border-t pt-6">
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-                >
-                  <Save size={20} />
-                  <span>{saving ? 'Salvando...' : 'Salvar Alterações'}</span>
-                </button>
-              </div>
-            </form>
-
-            {/* Informações da conta */}
-            <div className="mt-8 pt-6 border-t">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Informações da Conta</h3>
-              <div className="space-y-2 text-sm">
-                <p className="text-gray-600">
-                  <span className="font-medium">ID:</span> {profile?.id}
-                </p>
-                <p className="text-gray-600">
-                  <span className="font-medium">Membro desde:</span>{' '}
-                  {new Date(profile?.created_at).toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric'
-                  })}
-                </p>
-                <p className="text-gray-600">
-                  <span className="font-medium">Tipo de conta:</span>{' '}
-                  {profile?.role === 'admin' ? 'Administrador' : 'Usuário'}
-                </p>
-              </div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Bairro</label>
+<div className="relative">
+<MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+<input
+type="text"
+value={bairro}
+onChange={(e) => setBairro(e.target.value)}
+className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+placeholder="Centro, Vila Nova, etc."
+/>
+</div>
+<p className="mt-1 text-xs text-gray-500">Ajuda outros moradores a te encontrarem</p>
+</div>
+<div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                placeholder="(00) 00000-0000"
+              />
             </div>
+          </div>
+
+          <div className="border-t pt-6">
+            <button
+              type="submit"
+              disabled={saving}
+              className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            >
+              <Save size={20} />
+              <span>{saving ? 'Salvando...' : 'Salvar Alterações'}</span>
+            </button>
+          </div>
+        </form>
+
+        <div className="mt-8 pt-6 border-t">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Informações da Conta</h3>
+          <div className="space-y-2 text-sm">
+            <p className="text-gray-600">
+              <span className="font-medium">Membro desde:</span>{' '}
+              {new Date(profile?.created_at).toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+              })}
+            </p>
+            <p className="text-gray-600">
+              <span className="font-medium">Tipo de conta:</span>{' '}
+              {profile?.role === 'admin' ? 'Administrador' : 'Usuário'}
+            </p>
           </div>
         </div>
       </div>
     </div>
-  )
+  </div>
+</div>
+)
 }

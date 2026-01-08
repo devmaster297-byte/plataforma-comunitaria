@@ -51,7 +51,11 @@ export default function CadastroPage() {
       }
 
       setSuccess(true)
-      setTimeout(() => router.push('/login'), 2000)
+      
+      // Redirecionar para onboarding após 2 segundos
+      setTimeout(() => {
+        router.push('/onboarding')
+      }, 2000)
     } catch (error: any) {
       setError(error.message.includes('already registered') ? 'Este email já está cadastrado' : error.message)
     } finally {
@@ -67,8 +71,8 @@ export default function CadastroPage() {
             <CheckCircle className="text-green-600" size={32} />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Cadastro realizado!</h2>
-          <p className="text-gray-600 mb-4">Verifique seu email para confirmar sua conta.</p>
-          <p className="text-sm text-gray-500">Redirecionando para o login...</p>
+          <p className="text-gray-600 mb-4">Bem-vindo à comunidade!</p>
+          <p className="text-sm text-gray-500">Redirecionando...</p>
         </div>
       </div>
     )
