@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { createSupabaseClient } from '@/lib/supabase'
-import { MapPin, User, Clock, Edit, Trash2, ChevronLeft, ChevronRight, Phone, Mail } from 'lucide-react'
+import { createSupabaseClient, Publication } from '@/lib/supabase'
+import { MapPin, User, Clock, Trash2, ChevronLeft, ChevronRight, Phone } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
-const categoryColors = {
+type Category = 'ajuda' | 'servico' | 'vaga' | 'doacao' | 'aviso'
+
+const categoryColors: Record<Category, string> = {
   ajuda: 'bg-red-100 text-red-800',
   servico: 'bg-blue-100 text-blue-800',
   vaga: 'bg-green-100 text-green-800',
@@ -15,7 +17,7 @@ const categoryColors = {
   aviso: 'bg-yellow-100 text-yellow-800'
 }
 
-const categoryLabels = {
+const categoryLabels: Record<Category, string> = {
   ajuda: 'Pedido de Ajuda',
   servico: 'Serviço Local',
   vaga: 'Vaga de Emprego',
@@ -24,7 +26,7 @@ const categoryLabels = {
 }
 
 export default function PublicacaoDetalhesPage() {
-  const [publication, setPublication] = useState<any>(null)
+  const [publication, setPublication] = useState<Publication | null>(null)
   const [loading, setLoading] = useState(true)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isOwner, setIsOwner] = useState(false)
@@ -80,7 +82,7 @@ export default function PublicacaoDetalhesPage() {
   }
 
   const nextImage = () => {
-    if (publication.images && publication.images.length > 0) {
+    if (publication?.images && publication.images.length > 0) {
       setCurrentImageIndex((prev) => 
         prev === publication.images.length - 1 ? 0 : prev + 1
       )
@@ -88,7 +90,7 @@ export default function PublicacaoDetalhesPage() {
   }
 
   const prevImage = () => {
-    if (publication.images && publication.images.length > 0) {
+    if (publication?.images && publication.images.length > 0) {
       setCurrentImageIndex((prev) => 
         prev === 0 ? publication.images.length - 1 : prev - 1
       )
@@ -147,7 +149,7 @@ export default function PublicacaoDetalhesPage() {
                     <ChevronRight size={24} />
                   </button>
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                    {publication.images.map((_: any, index: number) => (
+                    {publication.images.map((_, index) => (
                       <button
                         key={index}
                         onClick={() => setCurrentImageIndex(index)}
@@ -230,7 +232,7 @@ export default function PublicacaoDetalhesPage() {
                   {publication.profiles?.avatar_url ? (
                     <img
                       src={publication.profiles.avatar_url}
-                      alt={publication.profiles.name}
+                      alt={publication.profiles.name || 'Avatar'}
                       className="w-12 h-12 rounded-full object-cover"
                     />
                   ) : (
