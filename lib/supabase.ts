@@ -1,7 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
-// Types para o banco de dados
 export interface Profile {
   id: string
   email: string
@@ -28,6 +27,16 @@ export interface Publication {
   profiles?: Profile
 }
 
+export interface Comment {
+  id: string
+  publication_id: string
+  user_id: string
+  content: string
+  created_at: string
+  updated_at: string
+  profiles?: Profile
+}
+
 export interface Ad {
   id: string
   user_id: string
@@ -42,12 +51,10 @@ export interface Ad {
   created_at: string
 }
 
-// Cliente para uso no lado do cliente (Client Components)
 export const createSupabaseClient = () => {
   return createClientComponentClient()
 }
 
-// Funções auxiliares
 export const uploadImage = async (file: File, bucket: string = 'publications') => {
   const supabase = createSupabaseClient()
   const fileExt = file.name.split('.').pop()

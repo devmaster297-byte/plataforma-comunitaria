@@ -6,6 +6,7 @@ import { createSupabaseClient, Publication } from '@/lib/supabase'
 import { MapPin, User, Clock, Trash2, ChevronLeft, ChevronRight, Phone } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import Comments from '@/components/Comments'
 
 type Category = 'ajuda' | 'servico' | 'vaga' | 'doacao' | 'aviso'
 
@@ -123,9 +124,8 @@ export default function PublicacaoDetalhesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          {/* Galeria de Imagens */}
           {publication.images && publication.images.length > 0 && (
             <div className="relative h-96 bg-gray-200">
               <img
@@ -165,7 +165,6 @@ export default function PublicacaoDetalhesPage() {
           )}
 
           <div className="p-6">
-            {/* Cabeçalho */}
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
@@ -198,14 +197,12 @@ export default function PublicacaoDetalhesPage() {
               )}
             </div>
 
-            {/* Descrição */}
             <div className="prose max-w-none mb-6">
               <p className="text-gray-700 whitespace-pre-wrap text-lg leading-relaxed">
                 {publication.description}
               </p>
             </div>
 
-            {/* Localização */}
             {publication.location && (
               <div className="flex items-center text-gray-600 mb-4 bg-gray-50 p-3 rounded-lg">
                 <MapPin size={20} className="mr-2 flex-shrink-0 text-primary-600" />
@@ -213,7 +210,6 @@ export default function PublicacaoDetalhesPage() {
               </div>
             )}
 
-            {/* Informações de Contato */}
             {publication.contact_info && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                 <h3 className="font-semibold text-blue-900 mb-2 flex items-center">
@@ -224,7 +220,6 @@ export default function PublicacaoDetalhesPage() {
               </div>
             )}
 
-            {/* Informações do Publicador */}
             <div className="border-t pt-6 mt-6">
               <h3 className="font-semibold text-gray-900 mb-4">Publicado por</h3>
               <div className="flex items-center gap-4">
@@ -250,7 +245,6 @@ export default function PublicacaoDetalhesPage() {
               </div>
             </div>
 
-            {/* Botão de Voltar */}
             <div className="mt-8 pt-6 border-t">
               <button
                 onClick={() => router.back()}
@@ -261,6 +255,9 @@ export default function PublicacaoDetalhesPage() {
             </div>
           </div>
         </div>
+
+        {/* Seção de Comentários */}
+        <Comments publicationId={params.id as string} />
       </div>
     </div>
   )
