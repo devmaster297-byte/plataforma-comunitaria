@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createSupabaseClient } from '@/lib/supabase'
+import { createSupabaseClient, Publication } from '@/lib/supabase'
 import PublicationCard from '@/components/PublicationCard'
 import { Search } from 'lucide-react'
 
 export default function Home() {
-  const [publications, setPublications] = useState([])
+  const [publications, setPublications] = useState<Publication[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('')
