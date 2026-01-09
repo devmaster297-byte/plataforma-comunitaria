@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createSupabaseClient, Publication } from '@/lib/supabase'
 import PublicationCard from '@/components/PublicationCard'
+import FarmaciasPlantao from '@/components/FarmaciasPlantao'
 import Link from 'next/link'
 import { Search, Heart, Users, Briefcase, Gift, Bell, MessageCircle, TrendingUp, ArrowRight, PlusCircle } from 'lucide-react'
 
@@ -103,7 +104,6 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section - Banner Personalizado */}
       {user ? (
-        // Banner para usuários LOGADOS
         <div className="relative bg-gradient-to-r from-primary-600 to-primary-700 text-white overflow-hidden">
           <div className="absolute inset-0 bg-black/5"></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -128,7 +128,6 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        // Banner para visitantes NÃO LOGADOS
         <div className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white overflow-hidden">
           <div className="absolute inset-0 bg-black/10"></div>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAgNHYyaDJ2LTJoLTJ6bS0yLTJ2Mmgydi0yaC0yem0wLTR2Mmgydi0yaC0yem0tMiA0djJoMnYtMmgtMnptMC00djJoMnYtMmgtMnptLTIgNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bS0yIDR2Mmgydi0yaC0yem0wLTR2Mmgydi0yaC0yem0tMiA0djJoMnYtMmgtMnptMC00djJoMnYtMmgtMnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-10"></div>
@@ -270,6 +269,11 @@ export default function Home() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Farmácias de Plantão */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <FarmaciasPlantao />
       </div>
 
       {/* Barra de Busca */}
