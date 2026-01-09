@@ -29,10 +29,14 @@ const categoryLabels = {
 export default function PublicationCard({ publication }: PublicationCardProps) {
   return (
     <Link href={`/publicacao/${publication.id}`}>
-      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden cursor-pointer">
+      <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all overflow-hidden cursor-pointer transform hover:-translate-y-1">
         {publication.images && publication.images.length > 0 && (
           <div className="w-full h-48 bg-gray-200">
-            <img src={publication.images[0]} alt={publication.title} className="w-full h-full object-cover" />
+            <img
+              src={publication.images[0]}
+              alt={publication.title}
+              className="w-full h-full object-cover"
+            />
           </div>
         )}
         
@@ -43,23 +47,40 @@ export default function PublicationCard({ publication }: PublicationCardProps) {
             </span>
             <span className="flex items-center text-xs text-gray-500">
               <Clock size={14} className="mr-1" />
-              {formatDistanceToNow(new Date(publication.created_at), { addSuffix: true, locale: ptBR })}
+              {formatDistanceToNow(new Date(publication.created_at), {
+                addSuffix: true,
+                locale: ptBR
+              })}
             </span>
           </div>
 
-          <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">{publication.title}</h3>
-          <p className="text-gray-600 text-sm mb-3 line-clamp-3">{publication.description}</p>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+            {publication.title}
+          </h3>
 
-          <div className="flex items-center justify-between text-sm text-gray-500">
-            <div className="flex items-center">
-              <User size={16} className="mr-1" />
-              <span>{publication.profiles?.name || 'Usuário'}</span>
+          <p className="text-gray-600 text-sm mb-3 line-clamp-3">
+            {publication.description}
+          </p>
+
+          <div className="space-y-2">
+            <div className="flex items-center text-sm text-gray-500">
+              <User size={16} className="mr-1 flex-shrink-0" />
+              <span className="truncate">{publication.profiles?.name || 'Usuário'}</span>
+              {publication.profiles?.bairro && (
+                <>
+                  <span className="mx-2">•</span>
+                  <MapPin size={14} className="mr-1 flex-shrink-0 text-primary-600" />
+                  <span className="font-medium text-primary-700 truncate">
+                    {publication.profiles.bairro}
+                  </span>
+                </>
+              )}
             </div>
             
             {publication.location && (
-              <div className="flex items-center">
-                <MapPin size={16} className="mr-1" />
-                <span className="truncate max-w-[150px]">{publication.location}</span>
+              <div className="flex items-center text-xs text-gray-500">
+                <MapPin size={14} className="mr-1 flex-shrink-0" />
+                <span className="truncate">{publication.location}</span>
               </div>
             )}
           </div>

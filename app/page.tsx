@@ -22,7 +22,7 @@ export default function Home() {
     try {
       let query = supabase
         .from('publications')
-        .select('*, profiles(id, name, avatar_url)')
+        .select('*, profiles(id, name, avatar_url, bairro)')
         .eq('status', 'ativo')
         .order('created_at', { ascending: false })
         .limit(6)
@@ -43,7 +43,7 @@ export default function Home() {
     try {
       let query = supabase
         .from('publications')
-        .select('*, profiles(id, name, avatar_url)')
+        .select('*, profiles(id, name, avatar_url, bairro)')
         .eq('status', 'ativo')
         .order('created_at', { ascending: false })
 
@@ -55,6 +55,23 @@ export default function Home() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleCategoryClick = (catId: string) => {
+    setCategory(catId)
+    setTimeout(() => {
+      const element = document.getElementById('publicacoes')
+      if (element) {
+        const offset = 100
+        const elementPosition = element.getBoundingClientRect().top
+        const offsetPosition = elementPosition + window.pageYOffset - offset
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        })
+      }
+    }, 100)
   }
 
   const categories = [
@@ -91,7 +108,7 @@ export default function Home() {
                 <ArrowRight size={20} />
               </Link>
               <button
-                onClick={() => document.getElementById('publicacoes')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => handleCategoryClick('')}
                 className="w-full sm:w-auto px-8 py-4 bg-primary-800/50 backdrop-blur-sm border-2 border-white/30 text-white rounded-lg hover:bg-primary-800/70 transition font-bold text-lg"
               >
                 Ver o que está acontecendo
@@ -180,10 +197,7 @@ export default function Home() {
               return (
                 <button
                   key={cat.id}
-                  onClick={() => {
-                    setCategory(cat.id)
-                    document.getElementById('publicacoes')?.scrollIntoView({ behavior: 'smooth' })
-                  }}
+                  onClick={() => handleCategoryClick(cat.id)}
                   className={`group p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all transform hover:-translate-y-2 ${
                     category === cat.id ? 'ring-4 ring-primary-500 shadow-xl' : ''
                   }`}
