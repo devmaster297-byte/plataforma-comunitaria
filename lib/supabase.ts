@@ -38,6 +38,21 @@ export interface Comment {
   profiles?: Profile
 }
 
+export interface FarmaciaPlantao {
+  id: string
+  nome: string
+  endereco: string
+  telefone: string
+  whatsapp: string | null
+  horario_inicio: string
+  horario_fim: string
+  dias_semana: string[]
+  ativa: boolean
+  ordem: number
+  created_at: string
+  updated_at: string
+}
+
 export interface Ad {
   id: string
   user_id: string
