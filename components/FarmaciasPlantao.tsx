@@ -1,17 +1,24 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { createSupabaseClient, FarmaciaPlantao } from '@/lib/supabase'
 import { Phone, MapPin, Clock, MessageCircle } from 'lucide-react'
 
 export default function FarmaciasPlantao() {
   const [farmacias, setFarmacias] = useState<FarmaciaPlantao[]>([])
   const [loading, setLoading] = useState(true)
-  const supabase = createSupabaseClient()
+  const [hoje, setHoje] = useState<string>('')
+
+  // 1. Instância única do cliente
+  const supabase = useMemo(() => createSupabaseClient(), [])
 
   useEffect(() => {
+    // 2. Define o dia atual apenas no cliente para evitar erro de hidratação
+    const dias = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado']
+    setHoje(dias[new Date().getDay()])
+    
     loadFarmacias()
-  }, [])
+  }, [supabase])
 
   const loadFarmacias = async () => {
     try {
@@ -30,11 +37,6 @@ export default function FarmaciasPlantao() {
     }
   }
 
-  const getDiaAtual = () => {
-    const dias = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado']
-    return dias[new Date().getDay()]
-  }
-
   const formatarDiasSemana = (dias: string[]) => {
     const diasMap: Record<string, string> = {
       'domingo': 'Dom',
@@ -48,31 +50,22 @@ export default function FarmaciasPlantao() {
     return dias.map(d => diasMap[d] || d).join(', ')
   }
 
-  const estaDePlantaoHoje = (farmacia: FarmaciaPlantao) => {
-    const hoje = getDiaAtual()
-    return farmacia.dias_semana.includes(hoje)
-  }
-
   if (loading) {
     return (
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <div className="flex justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-        </div>
+      <div className="bg-white rounded-xl shadow-md p-6 flex justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
       </div>
     )
   }
 
-  if (farmacias.length === 0) {
-    return null
-  }
+  if (farmacias.length === 0) return null
 
   return (
     <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-lg border-2 border-green-200 overflow-hidden">
       <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
-            <span className="text-3xl">💊</span>
+          <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg text-2xl">
+            💊
           </div>
           <div>
             <h3 className="text-xl font-bold text-white">Farmácias de Plantão</h3>
@@ -83,20 +76,21 @@ export default function FarmaciasPlantao() {
 
       <div className="p-6 space-y-4">
         {farmacias.map((farmacia) => {
-          const plantaoHoje = estaDePlantaoHoje(farmacia)
+          // Verifica se hoje está no array de dias da farmácia
+          const plantaoHoje = hoje && farmacia.dias_semana.includes(hoje)
           
           return (
             <div
               key={farmacia.id}
               className={`bg-white rounded-lg p-5 border-2 transition-all ${
                 plantaoHoje
-                  ? 'border-green-500 shadow-lg ring-2 ring-green-200'
-                  : 'border-gray-200 shadow-md'
+                  ? 'border-green-500 shadow-lg ring-2 ring-green-100'
+                  : 'border-gray-200 shadow-sm'
               }`}
             >
               {plantaoHoje && (
                 <div className="mb-3">
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-500 text-white rounded-full text-xs font-bold animate-pulse">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-500 text-white rounded-full text-xs font-bold animate-pulse">
                     <span className="w-2 h-2 bg-white rounded-full"></span>
                     DE PLANTÃO HOJE
                   </span>
@@ -128,20 +122,20 @@ export default function FarmaciasPlantao() {
               </div>
 
               <div className="flex gap-2">
-                
+                <a
                   href={`tel:${farmacia.telefone}`}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold text-sm shadow-md hover:shadow-lg"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold text-sm shadow-md"
                 >
                   <Phone size={18} />
                   Ligar
                 </a>
 
                 {farmacia.whatsapp && (
-                  
+                  <a
                     href={`https://wa.me/55${farmacia.whatsapp.replace(/\D/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition font-semibold text-sm shadow-md hover:shadow-lg"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition font-semibold text-sm shadow-md"
                   >
                     <MessageCircle size={18} />
                     WhatsApp
