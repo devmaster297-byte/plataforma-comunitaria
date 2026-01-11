@@ -1,0 +1,536 @@
+// app/page.tsx (Landing Institucional)
+'use client'
+
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { 
+  Building2, 
+  Users, 
+  TrendingUp, 
+  Shield,
+  Check,
+  ArrowRight,
+  BarChart3,
+  MessageCircle,
+  Star,
+  Zap,
+  Globe,
+  Heart,
+  Award,
+  Phone,
+  Mail,
+  MapPin
+} from 'lucide-react'
+import { getAllCities } from '@/lib/city-helpers'
+import type { City } from '@/lib/types-city'
+
+export default function InstitutionalLanding() {
+  const [cities, setCities] = useState<City[]>([])
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly')
+
+  useEffect(() => {
+    loadCities()
+  }, [])
+
+  const loadCities = async () => {
+    const data = await getAllCities()
+    setCities(data)
+  }
+
+  const plans = [
+    {
+      name: 'Trial Gratuito',
+      slug: 'trial',
+      duration: '30 dias grátis',
+      price: { monthly: 0, yearly: 0 },
+      features: [
+        'Até 100 usuários',
+        'Todas as funcionalidades básicas',
+        'Suporte por email',
+        'Analytics básico',
+        'Sem compromisso'
+      ],
+      cta: 'Começar Teste Grátis',
+      highlighted: false
+    },
+    {
+      name: 'Básico',
+      slug: 'basic',
+      duration: 'Para cidades pequenas',
+      price: { monthly: 297, yearly: 2970 },
+      features: [
+        'Até 1.000 usuários',
+        'Identidade visual personalizada',
+        'Analytics completo',
+        'Moderação de conteúdo',
+        'Suporte prioritário',
+        'Relatórios mensais'
+      ],
+      cta: 'Contratar Agora',
+      highlighted: false
+    },
+    {
+      name: 'Profissional',
+      slug: 'professional',
+      duration: 'Para cidades médias',
+      price: { monthly: 597, yearly: 5970 },
+      features: [
+        'Até 5.000 usuários',
+        'Tudo do plano Básico',
+        'Múltiplos administradores',
+        'API de integração',
+        'App mobile personalizado',
+        'Treinamento da equipe',
+        'Suporte 24/7'
+      ],
+      cta: 'Contratar Agora',
+      highlighted: true
+    },
+    {
+      name: 'Enterprise',
+      slug: 'enterprise',
+      duration: 'Para grandes cidades',
+      price: { monthly: 1497, yearly: 14970 },
+      features: [
+        'Usuários ilimitados',
+        'Tudo do plano Profissional',
+        'Infraestrutura dedicada',
+        'Customizações exclusivas',
+        'Integração com sistemas da prefeitura',
+        'Gerente de conta dedicado',
+        'SLA garantido'
+      ],
+      cta: 'Falar com Especialista',
+      highlighted: false
+    }
+  ]
+
+  const benefits = [
+    {
+      icon: Users,
+      title: 'Engajamento Cidadão',
+      description: 'Conecte cidadãos, promova participação ativa e fortaleça o senso de comunidade.'
+    },
+    {
+      icon: TrendingUp,
+      title: 'Economia para o Município',
+      description: 'Reduza custos com canais de atendimento tradicionais e otimize recursos.'
+    },
+    {
+      icon: BarChart3,
+      title: 'Dados e Insights',
+      description: 'Analytics completo para entender as necessidades da população.'
+    },
+    {
+      icon: Shield,
+      title: 'Seguro e Confiável',
+      description: 'Plataforma com moderação ativa e proteção de dados LGPD.'
+    },
+    {
+      icon: Zap,
+      title: 'Implementação Rápida',
+      description: 'Sua cidade online em menos de 7 dias, sem complicações.'
+    },
+    {
+      icon: Globe,
+      title: 'Acessível a Todos',
+      description: 'Interface intuitiva que funciona em qualquer dispositivo.'
+    }
+  ]
+
+  const testimonials = [
+    {
+      city: 'Santa Teresa - ES',
+      quote: 'A plataforma transformou a forma como nos comunicamos com os cidadãos. Em 3 meses, mais de 500 moradores já se cadastraram!',
+      author: 'Prefeito João Silva',
+      population: '25 mil hab.'
+    },
+    {
+      city: 'Santa Maria de Jetibá - ES',
+      quote: 'Conseguimos reduzir em 40% as ligações na ouvidoria. Os moradores resolvem muitas questões entre si através da plataforma.',
+      author: 'Secretária de Comunicação',
+      population: '38 mil hab.'
+    }
+  ]
+
+  const stats = [
+    { number: cities.length.toString(), label: 'Cidades Ativas' },
+    { number: cities.reduce((acc, c) => acc + c.users_count, 0).toLocaleString(), label: 'Usuários Cadastrados' },
+    { number: cities.reduce((acc, c) => acc + c.publications_count, 0).toLocaleString(), label: 'Interações' },
+    { number: '98%', label: 'Satisfação' }
+  ]
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAgNHYyaDJ2LTJoLTJ6bS0yLTJ2Mmgydi0yaC0yem0wLTR2Mmgydi0yaC0yem0tMiA0djJoMnYtMmgtMnptMC00djJoMnYtMmgtMnptLTIgNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bS0yIDR2Mmgydi0yaC0yem0wLTR2Mmgydi0yaC0yem0tMiA0djJoMnYtMmgtMnptMC00djJoMnYtMmgtMnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-10"></div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6">
+                <Building2 size={20} />
+                <span className="text-sm font-semibold">Solução para Prefeituras</span>
+              </div>
+
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                Conecte sua cidade de forma <span className="text-primary-200">moderna e eficiente</span>
+              </h1>
+
+              <p className="text-xl text-primary-100 mb-8 leading-relaxed">
+                Plataforma digital completa para engajar cidadãos, fortalecer a comunidade e transformar a comunicação do seu município.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <a
+                  href="#planos"
+                  className="px-8 py-4 bg-white text-primary-700 rounded-lg hover:bg-primary-50 transition font-bold text-lg text-center shadow-xl hover:shadow-2xl flex items-center justify-center gap-2"
+                >
+                  Ver Planos e Preços
+                  <ArrowRight size={20} />
+                </a>
+                <a
+                  href="#demonstracao"
+                  className="px-8 py-4 bg-primary-800/50 backdrop-blur-sm border-2 border-white/30 text-white rounded-lg hover:bg-primary-800/70 transition font-bold text-lg text-center"
+                >
+                  Agendar Demonstração
+                </a>
+              </div>
+
+              {/* Stats pequenos */}
+              <div className="mt-12 grid grid-cols-3 gap-4">
+                {stats.slice(0, 3).map((stat, idx) => (
+                  <div key={idx} className="text-center">
+                    <div className="text-3xl font-bold text-white">{stat.number}</div>
+                    <div className="text-sm text-primary-200">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="hidden md:block">
+              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 shadow-2xl">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4 p-4 bg-white/10 rounded-lg">
+                    <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                      <Check className="text-white" size={24} />
+                    </div>
+                    <div>
+                      <div className="font-semibold">Implementação Rápida</div>
+                      <div className="text-sm text-primary-200">Cidade online em 7 dias</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 p-4 bg-white/10 rounded-lg">
+                    <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                      <Shield className="text-white" size={24} />
+                    </div>
+                    <div>
+                      <div className="font-semibold">Segurança LGPD</div>
+                      <div className="text-sm text-primary-200">Dados protegidos</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 p-4 bg-white/10 rounded-lg">
+                    <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
+                      <BarChart3 className="text-white" size={24} />
+                    </div>
+                    <div>
+                      <div className="font-semibold">Analytics em Tempo Real</div>
+                      <div className="text-sm text-primary-200">Insights valiosos</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Cidades Ativas */}
+      {cities.length > 0 && (
+        <div className="py-16 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Cidades que já confiam em nós
+              </h2>
+              <p className="text-xl text-gray-600">
+                Veja alguns dos municípios que já estão conectados
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+              {cities.slice(0, 10).map((city) => (
+                <Link
+                  key={city.id}
+                  href={`/${city.slug}`}
+                  className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition text-center group"
+                >
+                  <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-primary-200 transition">
+                    <Building2 className="text-primary-600" size={32} />
+                  </div>
+                  <h3 className="font-bold text-gray-900 mb-1">{city.name}</h3>
+                  <p className="text-sm text-gray-600">{city.state}</p>
+                  <p className="text-xs text-gray-500 mt-2">{city.users_count} usuários</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Benefícios */}
+      <div className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Por que escolher nossa plataforma?
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Benefícios comprovados que transformam a gestão municipal
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {benefits.map((benefit, idx) => {
+              const Icon = benefit.icon
+              return (
+                <div key={idx} className="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition">
+                  <div className="w-14 h-14 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
+                    <Icon className="text-primary-600" size={28} />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
+                    {benefit.title}
+                  </h3>
+                  <p className="text-gray-600">
+                    {benefit.description}
+                  </p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Depoimentos */}
+      <div className="py-24 bg-gradient-to-br from-primary-50 to-primary-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              O que dizem nossos parceiros
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {testimonials.map((testimonial, idx) => (
+              <div key={idx} className="bg-white rounded-xl p-8 shadow-lg">
+                <div className="flex gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="fill-yellow-400 text-yellow-400" size={20} />
+                  ))}
+                </div>
+                <p className="text-gray-700 text-lg mb-6 italic">
+                  "{testimonial.quote}"
+                </p>
+                <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+                  <div>
+                    <div className="font-bold text-gray-900">{testimonial.author}</div>
+                    <div className="text-sm text-gray-600">{testimonial.city}</div>
+                  </div>
+                  <div className="text-sm text-gray-500">{testimonial.population}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Planos */}
+      <div id="planos" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Planos para cada tamanho de cidade
+            </h2>
+            <p className="text-xl text-gray-600 mb-8">
+              Escolha o plano ideal para o seu município
+            </p>
+
+            {/* Toggle Mensal/Anual */}
+            <div className="inline-flex items-center gap-4 p-1 bg-gray-100 rounded-lg">
+              <button
+                onClick={() => setSelectedPlan('monthly')}
+                className={`px-6 py-2 rounded-lg font-semibold transition ${
+                  selectedPlan === 'monthly'
+                    ? 'bg-white text-primary-600 shadow'
+                    : 'text-gray-600'
+                }`}
+              >
+                Mensal
+              </button>
+              <button
+                onClick={() => setSelectedPlan('yearly')}
+                className={`px-6 py-2 rounded-lg font-semibold transition ${
+                  selectedPlan === 'yearly'
+                    ? 'bg-white text-primary-600 shadow'
+                    : 'text-gray-600'
+                }`}
+              >
+                Anual
+                <span className="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                  -20%
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {plans.map((plan, idx) => (
+              <div
+                key={idx}
+                className={`rounded-2xl p-8 ${
+                  plan.highlighted
+                    ? 'bg-gradient-to-br from-primary-600 to-primary-700 text-white ring-4 ring-primary-300 shadow-2xl scale-105'
+                    : 'bg-white border-2 border-gray-200'
+                }`}
+              >
+                {plan.highlighted && (
+                  <div className="inline-block px-3 py-1 bg-yellow-400 text-gray-900 text-xs font-bold rounded-full mb-4">
+                    MAIS POPULAR
+                  </div>
+                )}
+
+                <h3 className={`text-2xl font-bold mb-2 ${plan.highlighted ? 'text-white' : 'text-gray-900'}`}>
+                  {plan.name}
+                </h3>
+                <p className={`text-sm mb-4 ${plan.highlighted ? 'text-primary-100' : 'text-gray-600'}`}>
+                  {plan.duration}
+                </p>
+
+                <div className="mb-6">
+                  <span className="text-4xl font-bold">
+                    R$ {plan.price[selectedPlan].toLocaleString()}
+                  </span>
+                  <span className={plan.highlighted ? 'text-primary-100' : 'text-gray-600'}>
+                    /{selectedPlan === 'monthly' ? 'mês' : 'ano'}
+                  </span>
+                </div>
+
+                <ul className="space-y-3 mb-8">
+                  {plan.features.map((feature, fIdx) => (
+                    <li key={fIdx} className="flex items-start gap-2">
+                      <Check
+                        className={`flex-shrink-0 ${plan.highlighted ? 'text-green-300' : 'text-green-600'}`}
+                        size={20}
+                      />
+                      <span className={`text-sm ${plan.highlighted ? 'text-primary-50' : 'text-gray-700'}`}>
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  className={`w-full py-3 rounded-lg font-bold transition ${
+                    plan.highlighted
+                      ? 'bg-white text-primary-700 hover:bg-primary-50'
+                      : 'bg-primary-600 text-white hover:bg-primary-700'
+                  }`}
+                >
+                  {plan.cta}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Final */}
+      <div id="demonstracao" className="bg-gradient-to-r from-primary-600 to-primary-700 py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+          <Award className="w-16 h-16 mx-auto mb-6" />
+          <h2 className="text-4xl font-bold mb-6">
+            Pronto para transformar sua cidade?
+          </h2>
+          <p className="text-xl text-primary-100 mb-8">
+            Agende uma demonstração gratuita ou inicie seu teste de 30 dias agora mesmo
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="mailto:contato@plataformacomunitaria.com.br"
+              className="px-8 py-4 bg-white text-primary-700 rounded-lg hover:bg-primary-50 transition font-bold text-lg flex items-center justify-center gap-2"
+            >
+              <Mail size={20} />
+              Agendar Demonstração
+            </a>
+            <a
+              href="tel:+5527999999999"
+              className="px-8 py-4 bg-primary-800 text-white rounded-lg hover:bg-primary-900 transition font-bold text-lg flex items-center justify-center gap-2"
+            >
+              <Phone size={20} />
+              (27) 99999-9999
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-400 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white font-bold">
+                  C
+                </div>
+                <span className="text-white font-bold">Comunidade Local</span>
+              </div>
+              <p className="text-sm">
+                Conectando cidades e transformando comunidades em todo o Brasil.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-white font-semibold mb-4">Soluções</h3>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="hover:text-white transition">Para Prefeituras</a></li>
+                <li><a href="#" className="hover:text-white transition">Para Cidadãos</a></li>
+                <li><a href="#planos" className="hover:text-white transition">Planos e Preços</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-white font-semibold mb-4">Empresa</h3>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="hover:text-white transition">Sobre Nós</a></li>
+                <li><a href="#" className="hover:text-white transition">Blog</a></li>
+                <li><a href="#" className="hover:text-white transition">Carreiras</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-white font-semibold mb-4">Contato</h3>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-center gap-2">
+                  <Mail size={16} />
+                  contato@exemplo.com.br
+                </li>
+                <li className="flex items-center gap-2">
+                  <Phone size={16} />
+                  (27) 99999-9999
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 pt-8 text-center text-sm">
+            <p>© 2026 Comunidade Local. Todos os direitos reservados.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}
