@@ -31,6 +31,8 @@ export interface Publication {
   created_at: string
   updated_at: string
   profiles?: Profile
+  location?: string
+  contact_info?: string
 }
 
 export interface Comment {

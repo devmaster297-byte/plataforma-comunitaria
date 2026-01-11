@@ -72,7 +72,28 @@ export default function CityPage() {
       category: selectedCategory,
       limit: 9
     })
-    setPublications(pubs)
+    // Ensure all publications have required fields and normalize status
+    const enrichedPubs = pubs.map(pub => {
+      // Map status values from types.Publication to supabase.Publication
+      let normalizedStatus: 'ativo' | 'inativo' | 'oculto' = 'ativo'
+      if (pub.status === 'resolvido') {
+        normalizedStatus = 'inativo'
+      } else if (pub.status === 'inativo') {
+        normalizedStatus = 'inativo'
+      } else if (pub.status === 'ativo') {
+        normalizedStatus = 'ativo'
+      }
+      
+      return {
+        ...pub,
+        status: normalizedStatus,
+        location: pub.location || '',
+        contact_info: pub.contact_info || '',
+        comments_count: pub.comments_count || 0,
+        reactions_count: pub.reactions_count || 0
+      } as Publication
+    })
+    setPublications(enrichedPubs)
     
     setLoading(false)
 
@@ -355,7 +376,7 @@ export default function CityPage() {
                   className={`p-6 bg-white rounded-xl shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 ${
                     selectedCategory === cat.id ? 'ring-4 shadow-xl' : ''
                   }`}
-                  style={selectedCategory === cat.id ? { ringColor: city.primary_color } : {}}
+                  style={selectedCategory === cat.id ? { '--ring-color': city.primary_color } as React.CSSProperties : {}}
                 >
                   <div 
                     className={`w-14 h-14 bg-gradient-to-br ${cat.color} rounded-xl flex items-center justify-center mx-auto mb-3`}
