@@ -83,10 +83,9 @@ export default function PublicacaoDetalhesPage() {
   }
 
   const nextImage = () => {
-    if (publication?.images && publication.images.length > 0) {
-      setCurrentImageIndex((prev) => 
-        prev === publication.images.length - 1 ? 0 : prev + 1
-      )
+    const images = publication?.images ?? []
+    if (images.length > 0) {
+      setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
     }
   }
 
