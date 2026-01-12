@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { MapPin, User, Clock } from 'lucide-react'
-import { Publication } from '@/lib/supabase'
+import type { Publication } from '@/lib/types'
 
 interface PublicationCardProps {
   publication: Publication

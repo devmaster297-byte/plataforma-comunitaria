@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import type { Publication } from './types'
+export type { Publication }
 
 export interface Profile {
   id: string
@@ -11,22 +13,6 @@ export interface Profile {
   role?: string
   created_at: string
   updated_at: string
-}
-
-export type Publication = {
-  id: string
-  user_id: string
-  title: string
-  description: string
-  category: 'ajuda' | 'servico' | 'vaga' | 'doacao' | 'aviso'
-  status: 'ativo' | 'inativo' | 'oculto'
-  location: string | null
-  contact_info: string | null
-  images: string[]
-  created_at: string
-  updated_at: string
-  comments_count: number
-  reactions_count: number
 }
 
 export interface Comment {

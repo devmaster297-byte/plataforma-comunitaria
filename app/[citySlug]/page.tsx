@@ -74,25 +74,15 @@ export default function CityPage() {
     })
     // Ensure all publications have required fields and normalize status
     const enrichedPubs = pubs.map(pub => {
-      // Map status values from types.Publication to supabase.Publication
-      let normalizedStatus: 'ativo' | 'inativo' | 'oculto' = 'ativo'
-      if (pub.status === 'resolvido') {
-        normalizedStatus = 'inativo'
-      } else if (pub.status === 'inativo') {
-        normalizedStatus = 'inativo'
-      } else if (pub.status === 'ativo') {
-        normalizedStatus = 'ativo'
-      }
-      
       return {
         ...pub,
-        status: normalizedStatus,
-        location: pub.location || '',
-        contact_info: pub.contact_info || '',
-        comments_count: pub.comments_count || 0,
-        reactions_count: pub.reactions_count || 0
-      }
-    }) as unknown as Publication[]
+        status: pub.status as Publication['status'],
+        location: pub.location ?? '',
+        contact_info: pub.contact_info ?? '',
+        comments_count: Number(pub.comments_count ?? 0),
+        reactions_count: Number(pub.reactions_count ?? 0)
+      } as Publication
+    }) as Publication[]
     setPublications(enrichedPubs)
     
     setLoading(false)
