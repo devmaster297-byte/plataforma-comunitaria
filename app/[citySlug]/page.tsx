@@ -91,8 +91,8 @@ export default function CityPage() {
         contact_info: pub.contact_info || '',
         comments_count: pub.comments_count || 0,
         reactions_count: pub.reactions_count || 0
-      } as Publication
-    })
+      }
+    }) as unknown as Publication[]
     setPublications(enrichedPubs)
     
     setLoading(false)

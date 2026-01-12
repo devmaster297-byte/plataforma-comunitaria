@@ -13,7 +13,7 @@ export interface Profile {
   updated_at: string
 }
 
-export interface Publication {
+export type Publication = {
   id: string
   user_id: string
   title: string
@@ -25,7 +25,8 @@ export interface Publication {
   images: string[]
   created_at: string
   updated_at: string
-  profiles?: Profile
+  comments_count: number
+  reactions_count: number
 }
 
 export interface Comment {

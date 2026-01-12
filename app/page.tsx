@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createSupabaseClient, Publication } from '@/lib/supabase'
+import { createSupabaseClient } from '@/lib/supabase'
+import type { Publication } from '@/lib/types'
 import PublicationCard from '@/components/PublicationCard'
 import FarmaciasPlantao from '@/components/FarmaciasPlantao'
 import Link from 'next/link'
@@ -47,9 +48,12 @@ export default function Home() {
 
       if (category) query = query.eq('category', category)
       const { data } = await query
-      setPublications(data || [])
-    } catch (error) {
-      console.error('Erro:', error)
+      const normalized = (data || []).map((p: any) => ({
+        ...p,
+        comments_count: Number(p.comments_count ?? 0),
+        reactions_count: Number(p.reactions_count ?? 0)
+      })) as Publication[]
+      setPublications(normalized)
     } finally {
       setLoading(false)
     }
@@ -69,7 +73,14 @@ export default function Home() {
       if (category) query = query.eq('category', category)
 
       const { data } = await query
-      setPublications(data || [])
+      const normalized = (data || []).map((p: any) => ({
+        ...p,
+        comments_count: p.comments_count ?? 0,
+        reactions_count: p.reactions_count ?? 0
+      }))
+      setPublications(normalized)
+    } catch (error) {
+      console.error('Erro ao buscar publicações:', error)
     } finally {
       setLoading(false)
     }

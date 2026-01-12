@@ -24,7 +24,7 @@ export interface Publication {
   title: string
   description: string
   category: 'ajuda' | 'servico' | 'vaga' | 'doacao' | 'aviso'
-  status: 'ativo' | 'resolvido' | 'inativo'
+  status: 'ativo' | 'resolvido' | 'inativo' | 'oculto'
   images?: string[]
   comments_count: number
   reactions_count: number
