@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { createSupabaseClient, Publication } from '@/lib/supabase'
-import { MapPin, User, Clock, Trash2, ChevronLeft, ChevronRight, Phone } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Clock, Trash2, MapPin, Phone, User } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { createSupabaseClient } from '@/lib/supabase'
+import type { Publication } from '@/lib/types'
 import Comments from '@/components/Comments'
 
 type Category = 'ajuda' | 'servico' | 'vaga' | 'doacao' | 'aviso'
@@ -90,10 +91,9 @@ export default function PublicacaoDetalhesPage() {
   }
 
   const prevImage = () => {
-    if (publication?.images && publication.images.length > 0) {
-      setCurrentImageIndex((prev) => 
-        prev === 0 ? publication.images.length - 1 : prev - 1
-      )
+    const images = publication?.images ?? []
+    if (images.length > 0) {
+      setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
     }
   }
 
@@ -121,19 +121,21 @@ export default function PublicacaoDetalhesPage() {
     )
   }
 
+  const images = publication.images ?? []
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          {publication.images && publication.images.length > 0 && (
+          {images.length > 0 && (
             <div className="relative h-96 bg-gray-200">
               <img
-                src={publication.images[currentImageIndex]}
+                src={images[currentImageIndex]}
                 alt={publication.title}
                 className="w-full h-full object-cover"
               />
               
-              {publication.images.length > 1 && (
+              {images.length > 1 && (
                 <>
                   <button
                     onClick={prevImage}
@@ -148,7 +150,7 @@ export default function PublicacaoDetalhesPage() {
                     <ChevronRight size={24} />
                   </button>
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                    {publication.images.map((_, index) => (
+                    {images.map((_, index) => (
                       <button
                         key={index}
                         onClick={() => setCurrentImageIndex(index)}

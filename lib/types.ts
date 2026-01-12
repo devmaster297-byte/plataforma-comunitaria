@@ -19,19 +19,23 @@ export interface Profile {
 
 export type Publication = {
   id: string
+  user_id?: string | null
   title: string
   description: string
-  images?: string[]
+  images?: string[] | null
   category: 'ajuda' | 'servico' | 'vaga' | 'doacao' | 'aviso'
   status: 'ativo' | 'oculto' | 'inativo' | 'resolvido'
   created_at: string
-  location?: string
-  contact_info?: string
+  updated_at?: string | null
+  location?: string | null
+  contact_info?: string | null
   profiles?: {
     id: string
-    name?: string
-    avatar_url?: string
-    bairro?: string
+    name?: string | null
+    avatar_url?: string | null
+    bairro?: string | null
+    phone?: string | null
+    email?: string | null
   } | null
   comments_count: number
   reactions_count: number

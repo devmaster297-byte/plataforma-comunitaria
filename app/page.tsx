@@ -51,7 +51,8 @@ export default function Home() {
       const normalized = (data || []).map((p: any) => ({
         ...p,
         comments_count: Number(p.comments_count ?? 0),
-        reactions_count: Number(p.reactions_count ?? 0)
+        reactions_count: Number(p.reactions_count ?? 0),
+        status: (p.status ?? 'ativo') as Publication['status']
       })) as Publication[]
       setPublications(normalized)
     } finally {
@@ -75,8 +76,8 @@ export default function Home() {
       const { data } = await query
       const normalized = (data || []).map((p: any) => ({
         ...p,
-        comments_count: p.comments_count ?? 0,
-        reactions_count: p.reactions_count ?? 0
+        comments_count: Number(p.comments_count ?? 0),
+        reactions_count: Number(p.reactions_count ?? 0)
       }))
       setPublications(normalized)
     } catch (error) {

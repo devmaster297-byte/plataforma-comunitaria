@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import { Clock, User, MapPin } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { MapPin, User, Clock } from 'lucide-react'
 import type { Publication } from '@/lib/types'
 
 interface PublicationCardProps {
