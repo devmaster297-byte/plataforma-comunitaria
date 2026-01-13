@@ -17,28 +17,20 @@ export interface Profile {
   updated_at: string
 }
 
-export type Publication = {
+export interface Publication {
   id: string
-  user_id?: string | null
+  user_id: string
+  city_id?: string
   title: string
   description: string
-  images?: string[] | null
   category: 'ajuda' | 'servico' | 'vaga' | 'doacao' | 'aviso'
-  status: 'ativo' | 'oculto' | 'inativo' | 'resolvido'
-  created_at: string
-  updated_at?: string | null
-  location?: string | null
-  contact_info?: string | null
-  profiles?: {
-    id: string
-    name?: string | null
-    avatar_url?: string | null
-    bairro?: string | null
-    phone?: string | null
-    email?: string | null
-  } | null
+  status: 'ativo' | 'resolvido' | 'inativo'
+  images?: string[]
   comments_count: number
   reactions_count: number
+  created_at: string
+  updated_at: string
+  profiles?: Profile
 }
 
 export interface Comment {

@@ -385,7 +385,7 @@ export default function PublicationDetailPage() {
                 {author?.bairro && (
                   <div className="flex items-center gap-2 text-gray-600">
                     <MapPin size={16} className="text-gray-400" />
-                    {author.bairro}, {author.cidade}
+                    {author.bairro}
                   </div>
                 )}
 
