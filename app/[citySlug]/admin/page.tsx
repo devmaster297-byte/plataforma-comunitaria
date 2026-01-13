@@ -17,6 +17,7 @@ import {
   Heart,
   AlertCircle
 } from 'lucide-react'
+import { Line, Bar } from 'recharts'
 import { getCityBySlug, getCityStats, getCityAnalytics, checkCityAdmin } from '@/lib/city-helpers'
 import { createSupabaseClient } from '@/lib/supabase'
 import type { City, CityStats, CityAnalytics } from '@/lib/types-city'

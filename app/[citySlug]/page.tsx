@@ -72,16 +72,7 @@ export default function CityPage() {
       category: selectedCategory,
       limit: 9
     })
-    // Ensure all publications have required fields and normalize status
-    const enrichedPubs = (pubs || []).map((pub: any) => ({
-      ...pub,
-      status: (pub.status ?? 'ativo') as Publication['status'],
-      location: pub.location ?? '',
-      contact_info: pub.contact_info ?? '',
-      comments_count: Number(pub.comments_count ?? 0),
-      reactions_count: Number(pub.reactions_count ?? 0)
-    })) as Publication[]
-    setPublications(enrichedPubs)
+    setPublications(pubs)
     
     setLoading(false)
 
