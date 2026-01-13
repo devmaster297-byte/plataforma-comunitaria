@@ -1,4 +1,3 @@
-// components/Header.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -16,7 +15,6 @@ import {
   MessageCircle
 } from 'lucide-react'
 import { createSupabaseClient } from '@/lib/supabase'
-import Notifications from './Notifications'
 import type { Profile } from '@/lib/types'
 
 export default function Header() {
@@ -31,9 +29,9 @@ export default function Header() {
     checkUser()
     
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN') {
-        setUser(session?.user)
-        loadProfile(session?.user?.id)
+      if (event === 'SIGNED_IN' && session?.user?.id) {
+        setUser(session.user)
+        loadProfile(session.user.id)
       } else if (event === 'SIGNED_OUT') {
         setUser(null)
         setProfile(null)
@@ -48,7 +46,7 @@ export default function Header() {
   const checkUser = async () => {
     const { data: { session } } = await supabase.auth.getSession()
     setUser(session?.user || null)
-    if (session?.user) {
+    if (session?.user?.id) {
       loadProfile(session.user.id)
     }
   }
@@ -67,15 +65,6 @@ export default function Header() {
     await supabase.auth.signOut()
     router.push('/')
     setIsProfileOpen(false)
-  }
-
-  const getNivelColor = (nivel?: string) => {
-    switch (nivel) {
-      case 'expert': return 'ring-2 ring-purple-500'
-      case 'avancado': return 'ring-2 ring-blue-500'
-      case 'intermediario': return 'ring-2 ring-green-500'
-      default: return 'ring-2 ring-gray-300'
-    }
   }
 
   return (
@@ -108,20 +97,12 @@ export default function Header() {
             >
               Explorar
             </Link>
-            
-            <Link 
-              href="/como-funciona" 
-              className="text-gray-600 hover:text-primary-600 transition font-medium"
-            >
-              Como funciona
-            </Link>
           </nav>
 
           {/* Actions */}
           <div className="flex items-center gap-3">
             {user ? (
               <>
-                {/* Botão de criar publicação */}
                 <Link
                   href="/publicar"
                   className="hidden sm:flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold shadow-md hover:shadow-lg"
@@ -130,10 +111,6 @@ export default function Header() {
                   Publicar
                 </Link>
 
-                {/* Notificações */}
-                <Notifications userId={user.id} />
-
-                {/* Menu do perfil */}
                 <div className="relative">
                   <button
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -143,16 +120,15 @@ export default function Header() {
                       <img
                         src={profile.avatar_url}
                         alt={profile.name}
-                        className={`w-10 h-10 rounded-full object-cover ${getNivelColor(profile.nivel)}`}
+                        className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-200"
                       />
                     ) : (
-                      <div className={`w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold ${getNivelColor(profile?.nivel)}`}>
+                      <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold ring-2 ring-gray-200">
                         {profile?.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
                       </div>
                     )}
                   </button>
 
-                  {/* Dropdown do perfil */}
                   {isProfileOpen && (
                     <>
                       <div
@@ -161,23 +137,11 @@ export default function Header() {
                       />
                       
                       <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 py-2">
-                        {/* Info do usuário */}
                         <div className="px-4 py-3 border-b border-gray-100">
                           <p className="font-semibold text-gray-900">{profile?.name}</p>
                           <p className="text-sm text-gray-500">{user.email}</p>
-                          {profile && (
-                            <div className="flex items-center gap-2 mt-2">
-                              <span className="text-xs px-2 py-1 bg-primary-100 text-primary-700 rounded-full font-semibold">
-                                {profile.nivel}
-                              </span>
-                              <span className="text-xs text-gray-500">
-                                {profile.pontos} pontos
-                              </span>
-                            </div>
-                          )}
                         </div>
 
-                        {/* Links do menu */}
                         <div className="py-2">
                           <Link
                             href="/perfil"
@@ -186,24 +150,6 @@ export default function Header() {
                           >
                             <User size={18} />
                             Meu Perfil
-                          </Link>
-
-                          <Link
-                            href="/minhas-publicacoes"
-                            onClick={() => setIsProfileOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition"
-                          >
-                            <MessageCircle size={18} />
-                            Minhas Publicações
-                          </Link>
-
-                          <Link
-                            href="/favoritos"
-                            onClick={() => setIsProfileOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition"
-                          >
-                            <Heart size={18} />
-                            Favoritos
                           </Link>
 
                           <Link
@@ -216,7 +162,6 @@ export default function Header() {
                           </Link>
                         </div>
 
-                        {/* Logout */}
                         <div className="border-t border-gray-100 pt-2">
                           <button
                             onClick={handleLogout}
@@ -248,7 +193,6 @@ export default function Header() {
               </>
             )}
 
-            {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden p-2 text-gray-600 hover:text-primary-600 hover:bg-gray-100 rounded-lg transition"
@@ -258,7 +202,6 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile menu */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-gray-200 py-4 space-y-2">
             <Link
@@ -275,24 +218,15 @@ export default function Header() {
             >
               Explorar
             </Link>
-            <Link
-              href="/como-funciona"
-              onClick={() => setIsMenuOpen(false)}
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
-            >
-              Como funciona
-            </Link>
             
             {user && (
-              <>
-                <Link
-                  href="/publicar"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold text-center"
-                >
-                  Criar Publicação
-                </Link>
-              </>
+              <Link
+                href="/publicar"
+                onClick={() => setIsMenuOpen(false)}
+                className="block px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold text-center"
+              >
+                Criar Publicação
+              </Link>
             )}
           </div>
         )}
