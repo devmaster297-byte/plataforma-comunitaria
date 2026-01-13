@@ -302,7 +302,7 @@ export default function UserProfile({ userId, isOwnProfile = false }: UserProfil
                 {profile.bairro && (
                   <div className="flex items-center gap-3">
                     <MapPin size={20} className="text-gray-400" />
-                    <p className="text-gray-700">{profile.bairro}, {profile.cidade}</p>
+                    <p className="text-gray-700">{profile.bairro}</p>
                   </div>
                 )}
 
