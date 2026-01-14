@@ -174,7 +174,7 @@ export default function Comments({ publicationId, userId, initialCount = 0 }: Co
                         </span>
                       </div>
                       <p className="text-sm text-gray-500">
-                        {formatDistanceToNow(new Date(comment.created_at), {
+                       if (comment.created_at) {formatDistanceToNow(new Date(comment.created_at), {
                           addSuffix: true,
                           locale: ptBR
                         })}

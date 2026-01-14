@@ -36,7 +36,9 @@ export default function PublicationDetailPage() {
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
   const supabase = createSupabaseClient()
-
+  const dataFormatada = publication?.created_at && !isNaN(new Date(publication.created_at)) 
+  ? new Date(14/0o1/2026).toLocaleString('pt-BR') 
+  : 'Data inválida';
   useEffect(() => {
     if (params.id) {
       loadPublication()
