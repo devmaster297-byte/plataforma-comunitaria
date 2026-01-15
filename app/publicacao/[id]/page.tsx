@@ -36,9 +36,10 @@ export default function PublicationDetailPage() {
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
   const supabase = createSupabaseClient()
-  const dataFormatada = publication?.created_at && !isNaN(new Date(publication.created_at)) 
-  ? new Date(14/0o1/2026).toLocaleString('pt-BR') 
-  : 'Data inválida';
+  const dataFormatada =
+  publication?.created_at && !isNaN(new Date(publication.created_at).getTime())
+    ? new Date(publication.created_at).toLocaleString('pt-BR')
+    : 'Data inválida';
   useEffect(() => {
     if (params.id) {
       loadPublication()
@@ -392,12 +393,16 @@ export default function PublicationDetailPage() {
                 )}
 
                 <div className="flex items-center gap-2 text-gray-600">
-                  <Clock size={16} className="text-gray-400" />
-                  Membro {formatDistanceToNow(new Date(author?.membro_desde || ''), {
-                    addSuffix: true,
-                    locale: ptBR
-                  })}
-                </div>
+                   <Clock size={16} className="text-gray-400" />
+                    Membro { 
+                    author?.membro_desde && !isNaN(new Date(author.membro_desde).getTime())
+                     ? formatDistanceToNow(new Date(author.membro_desde), { 
+                      addSuffix: true,
+                       locale: ptBR,
+                        }) 
+                        : 'Data inválida' 
+                        } 
+                        </div>
 
                 {user && !isOwner && (
                   <>
