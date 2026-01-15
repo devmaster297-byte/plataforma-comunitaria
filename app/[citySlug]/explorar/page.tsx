@@ -1,289 +1,346 @@
-// app/explorar/page.tsx
+// app/[citySlug]/explorar/page.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createSupabaseClient } from '@/lib/supabase'
-import PublicationCard from '@/components/PublicationCard'
-import AdvancedSearch from '@/components/AdvancedSearch'
+import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { 
-  Heart, 
-  Briefcase, 
-  TrendingUp, 
-  Gift, 
-  Bell,
-  Users,
+  Search, 
+  Filter,
+  ArrowLeft,
+  X,
+  SlidersHorizontal,
   MapPin,
-  TrendingUp as Fire,
-  ArrowRight,
-  Star
+  TrendingUp,
+  Clock,
+  Heart
 } from 'lucide-react'
+import { createSupabaseClient } from '@/lib/supabase'
+import { getCityBySlug, getCityPublications } from '@/lib/city-helpers'
+import type { City } from '@/lib/types-city'
 import type { Publication } from '@/lib/types'
+import PublicationCard from '@/components/PublicationCard'
 
-export default function ExplorePage() {
-  const [publications, setPublications] = useState<Publication[]>([])
-  const [loading, setLoading] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState('')
-  const [user, setUser] = useState<any>(null)
-  const [stats, setStats] = useState({
-    total_users: 0,
-    total_publications: 0,
-    total_interactions: 0
-  })
+const CATEGORIES = [
+  { id: 'all', name: 'Todas', icon: '📋' },
+  { id: 'ajuda', name: 'Ajuda', icon: '🆘' },
+  { id: 'servico', name: 'Serviços', icon: '💼' },
+  { id: 'vaga', name: 'Vagas', icon: '📈' },
+  { id: 'doacao', name: 'Doações', icon: '🎁' },
+  { id: 'aviso', name: 'Avisos', icon: '📢' }
+]
+
+const SORT_OPTIONS = [
+  { value: 'recent', label: 'Mais Recentes', icon: Clock },
+  { value: 'popular', label: 'Mais Populares', icon: TrendingUp },
+  { value: 'reactions', label: 'Mais Curtidas', icon: Heart }
+]
+
+export default function CityExplorePage() {
+  const params = useParams()
+  const router = useRouter()
   const supabase = createSupabaseClient()
 
+  const [city, setCity] = useState<City | null>(null)
+  const [publications, setPublications] = useState<Publication[]>([])
+  const [filteredPublications, setFilteredPublications] = useState<Publication[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState('recent')
+  const [showFilters, setShowFilters] = useState(false)
+  const [selectedBairro, setSelectedBairro] = useState('')
+
   useEffect(() => {
-    checkUser()
-    loadPublications()
-    loadStats()
-  }, [selectedCategory])
+    if (params.citySlug) {
+      loadCityData()
+    }
+  }, [params.citySlug])
 
-  const checkUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    setUser(session?.user || null)
-  }
+  useEffect(() => {
+    applyFilters()
+  }, [publications, selectedCategory, searchQuery, sortBy, selectedBairro])
 
-  const loadPublications = async () => {
-    setLoading(true)
+  const loadCityData = async () => {
     try {
-      let query = supabase
-        .from('publications')
-        .select(`
-          *,
-          profiles:user_id (id, name, avatar_url, bairro, nivel)
-        `)
-        .eq('status', 'ativo')
-        .order('created_at', { ascending: false })
-        .limit(12)
+      setLoading(true)
+      const citySlug = params.citySlug as string
 
-      if (selectedCategory) {
-        query = query.eq('category', selectedCategory)
+      const cityData = await getCityBySlug(citySlug)
+      if (!cityData) {
+        router.push('/404')
+        return
       }
 
-      const { data } = await query
-      setPublications(data || [])
+      setCity(cityData)
+
+      const pubs = await getCityPublications(cityData.id)
+      setPublications(pubs)
     } catch (error) {
-      console.error('Erro ao carregar publicações:', error)
+      console.error('Erro ao carregar dados:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const loadStats = async () => {
-    try {
-      const [usersRes, pubsRes, reactionsRes] = await Promise.all([
-        supabase.from('profiles').select('*', { count: 'exact', head: true }),
-        supabase.from('publications').select('*', { count: 'exact', head: true }),
-        supabase.from('reactions').select('*', { count: 'exact', head: true })
-      ])
+  const applyFilters = () => {
+    let filtered = [...publications]
 
-      setStats({
-        total_users: usersRes.count || 0,
-        total_publications: pubsRes.count || 0,
-        total_interactions: reactionsRes.count || 0
-      })
-    } catch (error) {
-      console.error('Erro ao carregar estatísticas:', error)
+    // Filtro por categoria
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(p => p.category === selectedCategory)
     }
+
+    // Filtro por busca
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter(p => 
+        p.title.toLowerCase().includes(query) ||
+        p.description.toLowerCase().includes(query)
+      )
+    }
+
+    // Filtro por bairro
+    if (selectedBairro) {
+      filtered = filtered.filter(p => 
+        p.profiles?.bairro?.toLowerCase() === selectedBairro.toLowerCase()
+      )
+    }
+
+    // Ordenação
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'recent':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        case 'popular':
+          return (b.comments_count + b.reactions_count) - (a.comments_count + a.reactions_count)
+        case 'reactions':
+          return b.reactions_count - a.reactions_count
+        default:
+          return 0
+      }
+    })
+
+    setFilteredPublications(filtered)
   }
 
-  const handleSearchResults = (results: Publication[]) => {
-    setPublications(results)
-    setSelectedCategory('')
+  const clearFilters = () => {
+    setSelectedCategory('all')
+    setSearchQuery('')
+    setSelectedBairro('')
+    setSortBy('recent')
   }
 
-  const categories = [
-    { id: 'ajuda', name: 'Ajuda', icon: Heart, color: 'from-red-500 to-red-600', count: 0 },
-    { id: 'servico', name: 'Serviços', icon: Briefcase, color: 'from-blue-500 to-blue-600', count: 0 },
-    { id: 'vaga', name: 'Vagas', icon: TrendingUp, color: 'from-green-500 to-green-600', count: 0 },
-    { id: 'doacao', name: 'Doações', icon: Gift, color: 'from-purple-500 to-purple-600', count: 0 },
-    { id: 'aviso', name: 'Avisos', icon: Bell, color: 'from-yellow-500 to-yellow-600', count: 0 }
-  ]
+  const uniqueBairros = Array.from(
+    new Set(publications.map(p => p.profiles?.bairro).filter(Boolean))
+  ).sort()
+
+  const categoryStats = CATEGORIES.map(cat => ({
+    ...cat,
+    count: cat.id === 'all' 
+      ? publications.length 
+      : publications.filter(p => p.category === cat.id).length
+  }))
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando publicações...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!city) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Cidade não encontrada
+          </h2>
+          <Link href="/" className="text-primary-600 hover:underline">
+            Voltar para o início
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white py-16">
+      {/* Header com cores da cidade */}
+      <div 
+        className="text-white py-12"
+        style={{
+          background: `linear-gradient(135deg, ${city.primary_color || '#3b82f6'} 0%, ${city.secondary_color || '#2563eb'} 100%)`
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Explore a Comunidade
-            </h1>
-            <p className="text-xl text-primary-100 max-w-2xl mx-auto">
-              Descubra pedidos, serviços, vagas e muito mais na sua cidade
-            </p>
-          </div>
+          <Link
+            href={`/${city.slug}`}
+            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-4 transition"
+          >
+            <ArrowLeft size={20} />
+            Voltar para {city.name}
+          </Link>
 
-          {/* Estatísticas */}
-          <div className="grid grid-cols-3 gap-4 max-w-3xl mx-auto mb-8">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-              <Users className="w-8 h-8 mx-auto mb-2" />
-              <div className="text-3xl font-bold">{stats.total_users}</div>
-              <div className="text-sm text-primary-100">Usuários</div>
-            </div>
-            
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-              <Fire className="w-8 h-8 mx-auto mb-2" />
-              <div className="text-3xl font-bold">{stats.total_publications}</div>
-              <div className="text-sm text-primary-100">Publicações</div>
-            </div>
-            
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-              <Heart className="w-8 h-8 mx-auto mb-2" />
-              <div className="text-3xl font-bold">{stats.total_interactions}</div>
-              <div className="text-sm text-primary-100">Interações</div>
+          <h1 className="text-4xl font-bold mb-4">
+            Explorar em {city.name}
+          </h1>
+
+          {/* Busca */}
+          <div className="max-w-2xl">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Buscar publicações..."
+                className="w-full pl-12 pr-12 py-4 rounded-xl bg-white text-gray-900 placeholder-gray-400 shadow-lg focus:outline-none focus:ring-2 focus:ring-white/50"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <X size={20} />
+                </button>
+              )}
             </div>
           </div>
-
-          {/* CTA para não-logados */}
-          {!user && (
-            <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-6 max-w-2xl mx-auto">
-              <p className="text-lg mb-4">
-                Cadastre-se gratuitamente para publicar e interagir com a comunidade
-              </p>
-              <div className="flex gap-3 justify-center">
-                <Link
-                  href="/cadastro"
-                  className="px-6 py-3 bg-white text-primary-700 rounded-lg hover:bg-primary-50 transition font-bold flex items-center gap-2"
-                >
-                  Criar conta grátis
-                  <ArrowRight size={18} />
-                </Link>
-                <Link
-                  href="/login"
-                  className="px-6 py-3 bg-primary-800/50 backdrop-blur-sm border-2 border-white/30 text-white rounded-lg hover:bg-primary-800/70 transition font-bold"
-                >
-                  Já tenho conta
-                </Link>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Busca */}
-      <div className="bg-white py-8 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AdvancedSearch onResults={handleSearchResults} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Categorias */}
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
+          {categoryStats.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`p-4 rounded-xl transition-all ${
+                selectedCategory === cat.id
+                  ? 'bg-white ring-2 ring-primary-500 shadow-lg scale-105'
+                  : 'bg-white hover:shadow-md'
+              }`}
+            >
+              <div className="text-2xl mb-1">{cat.icon}</div>
+              <div className="text-xs font-semibold mb-1">{cat.name}</div>
+              <div className="text-lg font-bold text-primary-600">{cat.count}</div>
+            </button>
+          ))}
         </div>
-      </div>
 
-      {/* Categorias */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Navegue por Categoria
-          </h2>
-          <p className="text-gray-600">
-            Encontre rapidamente o que procura
-          </p>
-        </div>
+        {/* Filtros */}
+        <div className="bg-white rounded-xl shadow-md p-4 mb-6">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-3 flex-1">
+              {/* Ordenação */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white cursor-pointer"
+              >
+                {SORT_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-12">
-          {categories.map((cat) => {
-            const Icon = cat.icon
-            return (
+              {/* Botão Filtros Avançados */}
               <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(selectedCategory === cat.id ? '' : cat.id)}
-                className={`group p-6 bg-white rounded-xl shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 ${
-                  selectedCategory === cat.id ? 'ring-4 ring-primary-500 shadow-xl' : ''
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+                  showFilters
+                    ? 'bg-primary-100 text-primary-700'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                <div className={`w-14 h-14 bg-gradient-to-br ${cat.color} rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform`}>
-                  <Icon className="text-white" size={28} />
-                </div>
-                <h3 className="font-bold text-gray-900 text-center">{cat.name}</h3>
+                <SlidersHorizontal size={18} />
+                Filtros
               </button>
-            )
-          })}
-        </div>
 
-        {selectedCategory && (
-          <div className="text-center mb-6">
-            <button
-              onClick={() => setSelectedCategory('')}
-              className="text-primary-600 hover:text-primary-700 font-medium"
-            >
-              ← Mostrar todas as categorias
-            </button>
-          </div>
-        )}
-
-        {/* Lista de publicações */}
-        <div>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {selectedCategory 
-                ? `${categories.find(c => c.id === selectedCategory)?.name}` 
-                : 'Todas as Publicações'}
-            </h2>
-            <span className="text-gray-600">
-              {publications.length} resultado{publications.length !== 1 ? 's' : ''}
-            </span>
-          </div>
-
-          {loading ? (
-            <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-            </div>
-          ) : publications.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-xl shadow-md">
-              <p className="text-gray-500 text-lg mb-6">
-                Nenhuma publicação encontrada nesta categoria
-              </p>
-              {!user && (
-                <Link
-                  href="/cadastro"
-                  className="inline-block px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold"
+              {/* Limpar filtros */}
+              {(selectedCategory !== 'all' || selectedBairro || searchQuery) && (
+                <button
+                  onClick={clearFilters}
+                  className="text-sm text-gray-600 hover:text-primary-600 underline"
                 >
-                  Seja o primeiro a publicar
-                </Link>
+                  Limpar filtros
+                </button>
               )}
             </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {publications.map((pub) => (
-                  <PublicationCard key={pub.id} publication={pub} />
-                ))}
-              </div>
 
-              {publications.length >= 12 && (
-                <div className="text-center mt-8">
-                  <button
-                    onClick={loadPublications}
-                    className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-semibold"
+            <div className="text-sm text-gray-600">
+              <span className="font-semibold">{filteredPublications.length}</span> resultado(s)
+            </div>
+          </div>
+
+          {/* Painel de Filtros Expandido */}
+          {showFilters && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="grid md:grid-cols-2 gap-4">
+                {/* Filtro por Bairro */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <MapPin size={16} className="inline mr-1" />
+                    Bairro
+                  </label>
+                  <select
+                    value={selectedBairro}
+                    onChange={(e) => setSelectedBairro(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
-                    Carregar mais
-                  </button>
+                    <option value="">Todos os bairros</option>
+                    {uniqueBairros.map((bairro) => (
+                      <option key={bairro} value={bairro}>
+                        {bairro}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              )}
-            </>
+              </div>
+            </div>
           )}
         </div>
-      </div>
 
-      {/* CTA Final para não-logados */}
-      {!user && (
-        <div className="bg-gradient-to-r from-primary-600 to-primary-700 py-16">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
-            <Star className="w-16 h-16 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold mb-4">
-              Pronto para participar?
-            </h2>
-            <p className="text-xl text-primary-100 mb-8">
-              Crie sua conta gratuita e comece a interagir com sua comunidade hoje mesmo
-            </p>
-            <Link
-              href="/cadastro"
-              className="inline-block px-8 py-4 bg-white text-primary-700 rounded-lg hover:bg-primary-50 transition font-bold text-lg shadow-lg hover:shadow-xl"
-            >
-              Criar conta grátis
-            </Link>
+        {/* Publicações */}
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Carregando publicações...</p>
+            </div>
           </div>
-        </div>
-      )}
+        ) : filteredPublications.length === 0 ? (
+          <div className="text-center py-20 bg-white rounded-xl shadow-lg">
+            <div className="text-6xl mb-4">🔍</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              Nenhuma publicação encontrada
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Tente ajustar os filtros ou realizar outra busca
+            </p>
+            <button
+              onClick={clearFilters}
+              className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+            >
+              Limpar Filtros
+            </button>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPublications.map((publication) => (
+              <PublicationCard key={publication.id} publication={publication} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
