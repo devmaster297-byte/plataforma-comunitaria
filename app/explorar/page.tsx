@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { 
   Search, 
@@ -32,7 +32,7 @@ const SORT_OPTIONS = [
   { value: 'reactions', label: 'Mais Curtidas', icon: Heart }
 ]
 
-export default function ExplorarPage() {
+function ExplorarContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createSupabaseClient()
@@ -360,5 +360,17 @@ export default function ExplorarPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function ExplorarPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    }>
+      <ExplorarContent />
+    </Suspense>
   )
 }
