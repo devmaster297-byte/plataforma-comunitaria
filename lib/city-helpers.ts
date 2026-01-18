@@ -214,4 +214,5 @@ export async function getCityAnalytics(cityId: string) {
     console.error('Erro ao buscar analytics:', error)
     return [] // Retorna array vazio para evitar erro de .map() no front-end
   }
+  
 }
