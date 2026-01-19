@@ -52,8 +52,8 @@ export default function CadastroPage() {
     setLoading(true)
     setError('')
 
-    // Validações de segurança
-    if (!formData.city_id) {
+    // 1. Validação de segurança (Reforçada)
+    if (!formData.city_id || formData.city_id === "") {
       setError('A seleção da cidade é obrigatória para continuar.')
       setLoading(false)
       return
@@ -65,13 +65,8 @@ export default function CadastroPage() {
       return
     }
 
-    if (formData.password.length < 6) {
-      setError('A senha deve ter no mínimo 6 caracteres')
-      setLoading(false)
-      return
-    }
-
     try {
+      // 2. Cadastro no Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -89,9 +84,29 @@ export default function CadastroPage() {
 
       if (authData.user) {
         setSuccess(true)
-        setTimeout(() => {
-          router.push('/')
-        }, 2000)
+
+        // 3. Lógica de Redirecionamento Dinâmico
+        // Buscamos o nome da cidade selecionada para criar o slug
+        const selectedCity = cities.find(c => c.id === formData.city_id)
+        
+        if (selectedCity) {
+          // Transforma "Santa Teresa" em "santa-teresa"
+          const citySlug = selectedCity.name
+            .toLowerCase()
+            .trim()
+            .normalize('NFD') // Remove acentos
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, '-') // Troca espaços por hifens
+            .replace(/[^\w-]+/g, '') // Remove caracteres especiais
+
+          setTimeout(() => {
+            // Direciona direto para a comunidade da cidade
+            router.push(`/${citySlug}`)
+          }, 2500)
+        } else {
+          // Fallback caso algo dê errado com o nome da cidade
+          setTimeout(() => router.push('/'), 2500)
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Erro ao criar conta. Tente novamente.')
