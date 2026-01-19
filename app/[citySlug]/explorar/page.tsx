@@ -13,13 +13,15 @@ import {
   MapPin,
   TrendingUp,
   Clock,
-  Heart
+  Heart,
+  Plus
 } from 'lucide-react'
 import { createSupabaseClient } from '@/lib/supabase'
 import { getCityBySlug, getCityPublications } from '@/lib/city-helpers'
 import type { City } from '@/lib/types-city'
 import type { Publication } from '@/lib/types'
 import PublicationCard from '@/components/PublicationCard'
+import CreatePostModal from '@/components/CreatePostModal'
 
 const CATEGORIES = [
   { id: 'all', name: 'Todas', icon: '📋' },
@@ -51,7 +53,31 @@ export default function CityExplorePage() {
   const [sortBy, setSortBy] = useState('recent')
   const [showFilters, setShowFilters] = useState(false)
   const [selectedBairro, setSelectedBairro] = useState('')
+const [isModalOpen, setIsModalOpen] = useState(false)
+const [userId, setUserId] = useState<string | null>(null)
+const handlePublishClick = () => {
+  if (!userId) {
+    alert("Você precisa estar logado para publicar!")
+    // Opcional: router.push('/login')
+    return
+  }
+  {/* Botão Flutuante de Publicar */}
+<button
+  onClick={handlePublishClick}
+  className="fixed bottom-8 right-8 w-16 h-16 bg-primary-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:bg-primary-700 transition-all hover:scale-110 z-40 md:hidden"
+>
+  <Plus size={32} />
+</button>
+  setIsModalOpen(true)
+}
 
+useEffect(() => {
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) setUserId(user.id)
+  }
+  checkUser()
+}, [])
   useEffect(() => {
     if (params.citySlug) {
       loadCityData()
@@ -340,7 +366,21 @@ export default function CityExplorePage() {
             ))}
           </div>
         )}
+        
       </div>
-    </div>
+   
+      {isModalOpen && city && userId && (
+        <CreatePostModal 
+          cityId={city.id}
+          userId={userId}
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={() => {
+            loadCityData() // Recarrega as publicações para incluir a nova
+            setIsModalOpen(false)
+          }}
+        />
+      )}
+    </div> // Fim da div principal
+    
   )
 }
