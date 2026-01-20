@@ -98,7 +98,9 @@ export default function HomePage() {
                   placeholder="Busque sua cidade..."
                   className="w-full pl-14 pr-6 py-5 rounded-xl bg-white text-gray-900 placeholder-gray-400 shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/50 text-lg"
                 />
+                
               </div>
+              
             </div>
 
             {/* Stats */}
@@ -281,7 +283,7 @@ export default function HomePage() {
         </section>
 
         {/* Para Prefeituras */}
-        <section>
+       <section>
           <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl shadow-lg p-12 text-white text-center">
             <Building2 className="mx-auto mb-4" size={48} />
             

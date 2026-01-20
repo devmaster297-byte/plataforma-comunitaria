@@ -1,5 +1,5 @@
 'use client'
-
+import { Metadata } from 'next'
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -136,23 +136,18 @@ export default function CityPage() {
       </div>
 
       {/* Estatísticas */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">{stats.users}</div>
-              <div className="text-sm text-gray-600">Cidadãos Ativos</div>
-            </div>
-            <div className="text-center border-l border-r border-gray-200">
-              <div className="text-3xl font-bold text-gray-900">{stats.publications}</div>
-              <div className="text-sm text-gray-600">Publicações</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">+{stats.growth}%</div>
-              <div className="text-sm text-gray-600">Crescimento</div>
-            </div>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+  {stats.users > 5 ? (
+    <div className="text-center">
+      <div className="text-3xl font-bold text-gray-900">{stats.users}</div>
+      <div className="text-sm text-gray-600">Cidadãos Ativos</div>
+    </div>
+  ) : (
+    <div className="text-center">
+      <div className="text-lg font-semibold text-primary-600">Comunidade em Crescimento</div>
+      <div className="text-xs text-gray-500">Faça parte dos primeiros membros!</div>
+    </div>
+  )}
       </div>
 
       {/* Seção Principal */}
@@ -227,4 +222,31 @@ export default function CityPage() {
       {city.subscription_status !== 'active' && <FreeVersionWatermark />}
     </div>
   )
+}
+
+export async function generateMetadata({ params }: { params: { citySlug: string } }): Promise<Metadata> {
+  const city = params.citySlug
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
+  return {
+    title: `Comunidade Local de ${city} | Avisos, Vagas e Serviços`,
+    description: `Participe da rede social de ${city}. Encontre oportunidades de trabalho, peça ajuda aos vizinhos e fique por dentro dos avisos oficiais da prefeitura.`,
+    openGraph: {
+      title: `Comunidade Local de ${city}`,
+      description: `Tudo o que acontece em ${city} em um só lugar.`,
+      url: `https://suaplataforma.com.br/${params.citySlug}`,
+      siteName: 'Comunidade Local',
+      images: [
+        {
+          url: '/og-image-default.png', // Uma imagem padrão atraente para redes sociais
+          width: 1200,
+          height: 630,
+        },
+      ],
+      locale: 'pt_BR',
+      type: 'website',
+    },
+  }
 }

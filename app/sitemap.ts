@@ -1,0 +1,25 @@
+// app/sitemap.ts
+import { MetadataRoute } from 'next'
+import { createSupabaseClient } from '@/lib/supabase'
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const supabase = createSupabaseClient()
+  const { data: cities } = await supabase.from('cities').select('slug')
+
+  const cityEntries = cities?.map((city) => ({
+    url: `https://plataforma-comunitaria.vercel.app/${city.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: 0.8,
+  })) || []
+
+  return [
+    {
+      url: 'https://plataforma-comunitaria.vercel.app/',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 1,
+    },
+    ...cityEntries,
+  ]
+}
