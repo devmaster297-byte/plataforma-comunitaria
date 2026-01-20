@@ -27,28 +27,39 @@ export default function Register() {
   }, []) // O array vazio garante que rode apenas uma vez
 
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+  e.preventDefault();
+  setLoading(true);
 
-    const { data, error } = await supabase.auth.signUp({
-      email: formData.email,
-      password: formData.password,
-      options: { 
-        data: { 
-            city_id: formData.city_id,
-            // Adicione o nome aqui se quiser salvar no profile automaticamente
-        },
-        emailRedirectTo: `${window.location.origin}/auth/callback`
-      }
-    })
-
-    if (error) {
-      alert(error.message)
-    } else {
-      setSuccess(true)
+  // 1. Faz o cadastro
+  const { data, error } = await supabase.auth.signUp({
+    email: formData.email,
+    password: formData.password,
+    options: { 
+      data: { city_id: formData.city_id } 
     }
-    setLoading(false)
+  });
+
+  if (error) {
+    alert(error.message);
+    setLoading(false);
+    return;
   }
+
+  // 2. Busca o SLUG da cidade selecionada para saber para onde ir
+  const { data: cityData } = await supabase
+    .from('cities')
+    .select('slug')
+    .eq('id', formData.city_id)
+    .single();
+
+  if (cityData?.slug) {
+    // 3. Redireciona para a página da cidade (ex: /santa-teresa)
+    router.push(`/${cityData.slug}`);
+  } else {
+    // Caso falhe, manda para um dashboard padrão ou home
+    router.push('/explorar');
+  }
+};
 
   // Se o cadastro deu certo, mostra mensagem de sucesso
   if (success) {
