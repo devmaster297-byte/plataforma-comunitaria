@@ -283,7 +283,7 @@ export default function HomePage() {
         </section>
 
         {/* Para Prefeituras */}
-       <section>
+     //  <section>
           <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl shadow-lg p-12 text-white text-center">
             <Building2 className="mx-auto mb-4" size={48} />
             
@@ -326,8 +326,8 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-        </section>
-      </div>
-    </div>
+     //   </section>
+     </div>
+   </div>
   )
 }
