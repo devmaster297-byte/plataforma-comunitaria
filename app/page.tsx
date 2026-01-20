@@ -281,53 +281,7 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-
-        {/* Para Prefeituras */}
-     //  <section>
-          <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl shadow-lg p-12 text-white text-center">
-            <Building2 className="mx-auto mb-4" size={48} />
-            
-            <h2 className="text-3xl font-bold mb-4">
-              É uma Prefeitura?
-            </h2>
-            
-            <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-              Tenha uma página institucional personalizada para sua cidade. 
-              Conecte-se diretamente com seus cidadãos!
-            </p>
-
-            <div className="grid md:grid-cols-3 gap-6 mb-8 max-w-3xl mx-auto">
-              <div className="flex items-center gap-2">
-                <CheckCircle size={20} />
-                <span>60 dias grátis</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle size={20} />
-                <span>Identidade visual personalizada</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle size={20} />
-                <span>Dashboard com analytics</span>
-              </div>
-            </div>
-
-            <div className="flex gap-4 justify-center flex-wrap">
-              <Link
-                href="/contato"
-                className="px-8 py-4 bg-white text-purple-600 rounded-lg hover:bg-purple-50 transition font-semibold shadow-lg"
-              >
-                Solicitar Demonstração
-              </Link>
-              <Link
-                href="/sobre"
-                className="px-8 py-4 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition font-semibold border-2 border-white/50"
-              >
-                Saiba Mais
-              </Link>
-            </div>
-          </div>
-     //   </section>
-     </div>
-   </div>
+      </div>
+    </div>
   )
 }
