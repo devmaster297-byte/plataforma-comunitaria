@@ -17,7 +17,12 @@ export default async function CityPage({ params }: { params: { citySlug: string 
   // Busca dados da cidade e estatísticas
   const { data: city } = await supabase.from('cities').select('*').eq('slug', params.citySlug).single();
   const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('city_id', city?.id);
-
+// Exemplo de como ficaria a busca de posts na Home
+const { data: posts } = await supabase
+  .from('posts')
+  .select('*, profiles(full_name)')
+  .eq('city_id', 'UUID_DE_SANTA_TERESA') // Filtra fixo por Santa Teresa
+  .order('created_at', { ascending: false });
   return (
     <main className="min-w-full">
       {/* Banner Otimizado */}
