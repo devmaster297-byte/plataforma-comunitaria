@@ -26,18 +26,17 @@ const { data: posts } = await supabase
   return (
     <main className="min-w-full">
       {/* Banner Otimizado */}
-      <div className="relative h-64 w-full">
-        <Image 
-          src={city?.image_url || '/default-city.jpg'} 
-          alt={city?.name}
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-          <h1 className="text-4xl font-bold text-white">Comunidade {city?.name}</h1>
-        </div>
-      </div>
+      <div className="bg-gradient-to-r from-green-800 to-green-600 py-16 px-4">
+  <div className="max-w-7xl mx-auto text-center">
+    <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+      Santa Teresa - ES
+    </h1>
+    <p className="text-green-50 text-xl max-w-2xl mx-auto">
+      O espaço digital dos moradores da Terra dos Colibris. 
+      Compartilhe avisos, encontre trabalhos e ajude os vizinhos.
+    </p>
+  </div>
+</div>
 
       {/* [CRÍTICO] Contadores Condicionais */}
       <section className="py-10 bg-white shadow-sm">
