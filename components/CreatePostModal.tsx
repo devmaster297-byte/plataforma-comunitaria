@@ -4,8 +4,8 @@
 import { useState, useEffect } from 'react'
 import { 
   X, Image, MapPin, Tag, AlertCircle, User, 
-  Loader2, CheckCircle
-} from 'lucide-react'
+  Loader2, CheckCircle, ArrowRight} 
+  from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'

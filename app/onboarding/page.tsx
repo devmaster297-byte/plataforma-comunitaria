@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { MapPin, User, Phone, CheckCircle, MessageCircle, Briefcase, Bell, Search } from 'lucide-react'
+import { MapPin, User, Phone, CheckCircle, MessageCircle, Briefcase, ArrowRight, Bell, Search } from 'lucide-react'
 
 export default function OnboardingPage() {
   const [step, setStep] = useState(1)

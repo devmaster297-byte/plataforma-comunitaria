@@ -394,7 +394,7 @@ export default async function HomePage() {
           {/* Componente Principal de Posts */}
           <div className="relative">
             <div className="absolute -left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-green-400 to-emerald-600 rounded-full hidden lg:block"></div>
-            <SantaTeresaClient userId={user?.id} />
+            <SantaTeresaClient />
           </div>
 
           {/* Rodapé do Feed */}
