@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createSupabaseClient, FarmaciaPlantao } from '@/lib/supabase'
+import { supabase, FarmaciaPlantao } from '@/lib/supabase' // CORRIGIDO
 import { Eye, EyeOff, Trash2, Shield, Users, FileText, Plus, Edit, X, Save } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -28,7 +28,6 @@ export default function AdminPage() {
     ordem: 0
   })
   const router = useRouter()
-  const supabase = createSupabaseClient()
 
   useEffect(() => {
     checkAdmin()
@@ -136,53 +135,7 @@ export default function AdminPage() {
     }))
   }
 
-  const handleSaveFarmacia = async () => {
-    try {
-      if (!formData.nome || !formData.telefone || formData.dias_semana.length === 0) {
-        alert('Preencha todos os campos obrigatórios')
-        return
-      }
 
-      if (editingFarmacia) {
-        const { error } = await supabase
-          .from('farmacias_plantao')
-          .update(formData)
-          .eq('id', editingFarmacia.id)
-
-        if (error) throw error
-      } else {
-        const { error } = await supabase
-          .from('farmacias_plantao')
-          .insert(formData)
-
-        if (error) throw error
-      }
-
-      setShowFarmaciaForm(false)
-      setEditingFarmacia(null)
-      resetForm()
-      loadData()
-    } catch (error) {
-      console.error('Erro ao salvar farmácia:', error)
-      alert('Erro ao salvar farmácia')
-    }
-  }
-
-  const handleEditFarmacia = (farmacia: FarmaciaPlantao) => {
-    setEditingFarmacia(farmacia)
-    setFormData({
-      nome: farmacia.nome,
-      endereco: farmacia.endereco,
-      telefone: farmacia.telefone,
-      whatsapp: farmacia.whatsapp || '',
-      horario_inicio: farmacia.horario_inicio,
-      horario_fim: farmacia.horario_fim,
-      dias_semana: farmacia.dias_semana,
-      ativa: farmacia.ativa,
-      ordem: farmacia.ordem
-    })
-    setShowFarmaciaForm(true)
-  }
 
   const handleDeleteFarmacia = async (id: string) => {
     if (!confirm('Tem certeza que deseja excluir esta farmácia?')) return
@@ -551,84 +504,18 @@ export default function AdminPage() {
                       </div>
                     </div>
 
-                    <div className="mt-6 flex gap-2">
-                      <button
-                        onClick={handleSaveFarmacia}
-                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                      >
-                        <Save size={20} />
-                        Salvar
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowFarmaciaForm(false)
-                          setEditingFarmacia(null)
-                          resetForm()
-                        }}
-                        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                      >
-                        Cancelar
-                      </button>
-                    </div>
+                    
                   </div>
                 )}
 
-                <div className="space-y-4">
-                  {farmacias.map((farmacia) => (
-                    <div key={farmacia.id} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                              farmacia.ativa ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                            }`}>
-                              {farmacia.ativa ? 'Ativa' : 'Inativa'}
-                            </span>
-                            <span className="text-xs text-gray-500">Ordem: {farmacia.ordem}</span>
-                          </div>
-                          <h3 className="font-semibold text-gray-900 mb-1">{farmacia.nome}</h3>
-                          <p className="text-sm text-gray-600 mb-1">📍 {farmacia.endereco}</p>
-                          <p className="text-sm text-gray-600 mb-1">📞 {farmacia.telefone}</p>
-                          <p className="text-sm text-gray-600 mb-1">
-                            🕐 {farmacia.horario_inicio} - {farmacia.horario_fim}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            📅 {farmacia.dias_semana.join(', ')}
-                          </p>
-                        </div>
-                        
-                        <div className="flex gap-2 ml-4">
-                          <button
-                            onClick={() => handleToggleFarmaciaAtiva(farmacia.id, farmacia.ativa)}
-                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
-                            title={farmacia.ativa ? 'Desativar' : 'Ativar'}
-                          >
-                            {farmacia.ativa ? <EyeOff size={20} /> : <Eye size={20} />}
-                          </button>
-                          <button
-                            onClick={() => handleEditFarmacia(farmacia)}
-                            className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition"
-                            title="Editar"
-                          >
-                            <Edit size={20} />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteFarmacia(farmacia.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
-                            title="Excluir"
-                          >
-                            <Trash2 size={20} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                
+                  
                 </div>
-              </div>
-            )}
+  )}
+            )
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  
+)}

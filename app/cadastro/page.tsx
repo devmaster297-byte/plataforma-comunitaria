@@ -1,14 +1,19 @@
 'use client'
+
 import { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createSupabaseClient } from '@/lib/supabase' 
+import { supabase } from '@/lib/supabase' // CORRIGIDO
+import { Eye, EyeOff, User, Mail, Lock, Phone, MapPin, Check } from 'lucide-react'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod' 
 
 export default function Register() {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({ email: '', password: '', name: '' })
   const router = useRouter()
-  const supabase = createSupabaseClient()
-
+  
   // SUBSTITUA PELO SEU UUID REAL DE SANTA TERESA
   const SANTA_TERESA_ID = 'e7e4747d-5798-4885-85f9-b04a2c34f01b'
 

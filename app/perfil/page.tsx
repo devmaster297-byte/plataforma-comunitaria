@@ -22,14 +22,13 @@ import {
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { createSupabaseClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import type { Profile, Publication } from '@/lib/types'
 import PublicationCard from '@/components/PublicationCard'
 
 export default function PerfilPage() {
   const router = useRouter()
-  const supabase = createSupabaseClient()
-
+  
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [publications, setPublications] = useState<Publication[]>([])

@@ -1,189 +1,113 @@
+// @/components/Navbar.tsx
 'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { Menu, X, Home, PlusCircle, User, LogOut, Shield } from 'lucide-react'
-import { createSupabaseClient } from '@/lib/supabase'
+import { Menu, X, User, Home, Bell, LogIn } from 'lucide-react'
 
-interface NavbarProps {
-  user: any
-  profile?: any
-}
-
-export default function Navbar({ user, profile }: NavbarProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const router = useRouter()
-  const supabase = createSupabaseClient()
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    setIsOpen(false)
-    router.push('/login')
-    router.refresh()
-  }
-
-  const handleNavClick = (href: string) => {
-    setIsOpen(false)
-    router.push(href)
-  }
+export default function Navbar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2" onClick={() => setIsOpen(false)}>
-              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">C</span>
+    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-emerald-700 rounded-full flex items-center justify-center">
+              <Home className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <span className="font-bold text-green-900 text-lg">Santa Teresa</span>
+              <span className="block text-xs text-gray-500">Portal Comunitário</span>
+            </div>
+          </Link>
+
+          {/* Menu Desktop */}
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/" className="text-gray-700 hover:text-green-700 font-medium">
+              Início
+            </Link>
+            <Link href="/avisos" className="text-gray-700 hover:text-green-700 font-medium">
+              Avisos
+            </Link>
+            <Link href="/eventos" className="text-gray-700 hover:text-green-700 font-medium">
+              Eventos
+            </Link>
+            <Link href="/bairros" className="text-gray-700 hover:text-green-700 font-medium">
+              Bairros
+            </Link>
+            
+            <div className="flex items-center gap-4">
+              <button className="text-gray-600 hover:text-green-700">
+                <Bell className="w-5 h-5" />
+              </button>
+              
+              <div className="h-6 w-px bg-gray-300"></div>
+              
+              <Link 
+                href="/login" 
+                className="flex items-center gap-2 text-green-700 hover:text-green-800 font-medium"
+              >
+                <LogIn className="w-4 h-4" />
+                Entrar
+              </Link>
+              
+              <Link 
+                href="/cadastro" 
+                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-5 py-2 rounded-full font-medium hover:from-green-700 hover:to-emerald-700 transition-all"
+              >
+                Cadastrar
+              </Link>
+            </div>
+          </div>
+
+          {/* Menu Mobile Button */}
+          <button 
+            className="md:hidden text-gray-700"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+
+        {/* Menu Mobile */}
+        {isMenuOpen && (
+          <div className="md:hidden mt-4 pb-4 border-t border-gray-100 pt-4">
+            <div className="flex flex-col gap-3">
+              <Link href="/" className="text-gray-700 hover:text-green-700 font-medium py-2">
+                Início
+              </Link>
+              <Link href="/avisos" className="text-gray-700 hover:text-green-700 font-medium py-2">
+                Avisos
+              </Link>
+              <Link href="/eventos" className="text-gray-700 hover:text-green-700 font-medium py-2">
+                Eventos
+              </Link>
+              <Link href="/bairros" className="text-gray-700 hover:text-green-700 font-medium py-2">
+                Bairros
+              </Link>
+              
+              <div className="pt-3 border-t border-gray-100 space-y-3">
+                <Link 
+                  href="/login" 
+                  className="flex items-center gap-2 text-green-700 hover:text-green-800 font-medium py-2"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Entrar
+                </Link>
+                
+                <Link 
+                  href="/cadastro" 
+                  className="block bg-gradient-to-r from-green-600 to-emerald-600 text-white text-center py-3 rounded-full font-medium hover:from-green-700 hover:to-emerald-700 transition-all"
+                >
+                  Cadastrar
+                </Link>
               </div>
-              <span className="font-bold text-xl text-gray-800">Comunidade Local</span>
-            </Link>
+            </div>
           </div>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Link
-              href="/"
-              className="flex items-center space-x-1 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition"
-            >
-              <Home size={20} />
-              <span>Início</span>
-            </Link>
-
-            {user ? (
-              <>
-                <Link
-                  href="/publicar"
-                  className="flex items-center space-x-1 px-3 py-2 rounded-md bg-primary-600 text-white hover:bg-primary-700 transition"
-                >
-                  <PlusCircle size={20} />
-                  <span>Publicar</span>
-                </Link>
-
-                {profile?.role === 'admin' && (
-                  <Link
-                    href="/admin"
-                    className="flex items-center space-x-1 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition"
-                  >
-                    <Shield size={20} />
-                    <span>Admin</span>
-                  </Link>
-                )}
-
-                <Link
-                  href="/perfil"
-                  className="flex items-center space-x-1 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition"
-                >
-                  <User size={20} />
-                  <span>Perfil</span>
-                </Link>
-
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center space-x-1 px-3 py-2 rounded-md text-red-600 hover:bg-red-50 transition"
-                >
-                  <LogOut size={20} />
-                  <span>Sair</span>
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition"
-                >
-                  Entrar
-                </Link>
-                <Link
-                  href="/cadastro"
-                  className="px-4 py-2 rounded-md bg-primary-600 text-white hover:bg-primary-700 transition"
-                >
-                  Cadastrar
-                </Link>
-              </>
-            )}
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-md text-gray-700 hover:bg-gray-100"
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
+        )}
       </div>
-
-      {/* Mobile Navigation */}
-      {isOpen && (
-        <div className="md:hidden border-t border-gray-200">
-          <div className="px-2 pt-2 pb-3 space-y-1">
-            <button
-              onClick={() => handleNavClick('/')}
-              className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 w-full text-left"
-            >
-              <Home size={20} />
-              <span>Início</span>
-            </button>
-
-            {user ? (
-              <>
-                <button
-                  onClick={() => handleNavClick('/publicar')}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-md bg-primary-600 text-white w-full text-left"
-                >
-                  <PlusCircle size={20} />
-                  <span>Publicar</span>
-                </button>
-
-                {profile?.role === 'admin' && (
-                  <button
-                    onClick={() => handleNavClick('/admin')}
-                    className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 w-full text-left"
-                  >
-                    <Shield size={20} />
-                    <span>Admin</span>
-                  </button>
-                )}
-
-                <button
-                  onClick={() => handleNavClick('/perfil')}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 w-full text-left"
-                >
-                  <User size={20} />
-                  <span>Perfil</span>
-                </button>
-
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-red-600 hover:bg-red-50 w-full text-left"
-                >
-                  <LogOut size={20} />
-                  <span>Sair</span>
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => handleNavClick('/login')}
-                  className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 w-full text-left"
-                >
-                  Entrar
-                </button>
-                <button
-                  onClick={() => handleNavClick('/cadastro')}
-                  className="block px-3 py-2 rounded-md bg-primary-600 text-white w-full text-left"
-                >
-                  Cadastrar
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </nav>
   )
 }

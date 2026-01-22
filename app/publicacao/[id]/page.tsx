@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { createSupabaseClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { toggleReaction, checkUserReaction } from '@/lib/supabase-helpers'
 import Comments from '@/components/Comments'
 import type { Publication, Profile } from '@/lib/types'
@@ -35,7 +35,6 @@ export default function PublicationDetailPage() {
   const [likesCount, setLikesCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
-  const supabase = createSupabaseClient()
   const dataFormatada =
   publication?.created_at && !isNaN(new Date(publication.created_at).getTime())
     ? new Date(publication.created_at).toLocaleString('pt-BR')

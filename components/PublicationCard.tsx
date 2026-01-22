@@ -14,7 +14,7 @@ import {
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { toggleReaction, checkUserReaction } from '@/lib/supabase-helpers'
-import { createSupabaseClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import type { Publication } from '@/lib/types'
 
 interface PublicationCardProps {
@@ -26,7 +26,6 @@ export default function PublicationCard({ publication }: PublicationCardProps) {
   const [likesCount, setLikesCount] = useState(publication.reactions_count || 0)
   const [user, setUser] = useState<any>(null)
   const [processing, setProcessing] = useState(false)
-  const supabase = createSupabaseClient()
 
   useEffect(() => {
     checkUserAndLike()

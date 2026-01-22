@@ -17,7 +17,7 @@ import {
   Send,
   AlertCircle
 } from 'lucide-react'
-import { createSupabaseClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 export default function PublicarPage() {
   const [user, setUser] = useState<any>(null)
@@ -36,7 +36,6 @@ export default function PublicarPage() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
   
   const router = useRouter()
-  const supabase = createSupabaseClient()
 
   useEffect(() => {
     checkUser()

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createSupabaseClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { MapPin, User, Phone, CheckCircle, MessageCircle, Briefcase, Bell, Search } from 'lucide-react'
 
 export default function OnboardingPage() {
@@ -13,7 +13,6 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false)
   const [profileId, setProfileId] = useState<string | null>(null)
   const router = useRouter()
-  const supabase = createSupabaseClient()
 
   useEffect(() => {
     checkProfile()

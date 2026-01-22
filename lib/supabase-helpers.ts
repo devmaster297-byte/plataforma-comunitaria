@@ -3,7 +3,7 @@
 // FUNÇÕES AUXILIARES SUPABASE - FASE 1
 // ============================================
 
-import { createSupabaseClient } from './supabase'
+import { supabase } from './supabase'
 import type { 
   Comment, 
   Reaction, 
@@ -12,7 +12,7 @@ import type {
   UserStats 
 } from './types'
 
-const supabase = createSupabaseClient()
+
 
 // ============================================
 // COMENTÁRIOS
